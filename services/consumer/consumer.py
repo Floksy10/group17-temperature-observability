@@ -13,6 +13,8 @@ from avro.datafile import DataFileReader
 from avro.io import DatumReader
 from confluent_kafka import Consumer, KafkaError, KafkaException, Message
 
+from processor import ExperimentProcessor
+
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO"),
@@ -23,6 +25,7 @@ LOGGER = logging.getLogger("group17-consumer")
 AUTH_DIR = Path(os.getenv("KAFKA_AUTH_DIR", "/app/auth"))
 PROPERTIES_FILE = AUTH_DIR / "client-ssl.properties"
 RUNNING = True
+PROCESSOR = ExperimentProcessor()
 
 
 def load_properties(path: Path) -> dict[str, str]:
@@ -90,6 +93,25 @@ def process_message(message: Message) -> None:
             message.offset(),
             json.dumps(record, sort_keys=True),
         )
+
+        if name == "experiment_configured":
+            PROCESSOR.configure(record)
+        elif name == "experiment_started":
+            PROCESSOR.start(record)
+        elif name == "sensor_temperature_measured":
+            measurement = PROCESSOR.add_measurement(record)
+            if measurement is not None:
+                LOGGER.info(
+                    "measurement_aggregated experiment=%s measurement_id=%s "
+                    "average_temperature=%.3f out_of_range=%s started=%s",
+                    measurement.experiment,
+                    measurement.measurement_id,
+                    measurement.average_temperature,
+                    measurement.out_of_range,
+                    measurement.experiment_started,
+                )
+        elif name == "experiment_terminated":
+            PROCESSOR.terminate(record)
 
 
 def stop(_signum: int, _frame: object) -> None:
