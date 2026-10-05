@@ -1,0 +1,38 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+auth/
+credentials/
+secrets/
+token
+*.pem
+*.key
+*.p12
+*.pkcs12
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime data
+data/
+logs/
+*.log
+*.db
+*.sqlite*
+
+# IDE and operating system
+.DS_Store
+.idea/
+.vscode/
+
+# Build output
+dist/
+build/
+coverage/
