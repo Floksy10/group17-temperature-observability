@@ -178,6 +178,7 @@ Nick's optional consumer and tunnel are already configured but stopped.
 Ibrahim and Yorick each need their own VM private/public IP, a dedicated
 tunnel public key, and secure delivery of the group database password and
 Kafka TLS files. The group VM maintainer then restricts each tunnel key to
-that VM's source IP and `127.0.0.1:5432`, following the onboarding section of
-[team-handoff.md](team-handoff.md). Set up and verify one VM at a time. Measure
+that VM's source IP and `127.0.0.1:5432`, following the exact commands in
+[personal-consumer-setup.md](personal-consumer-setup.md). Set up and verify one
+VM at a time. Measure
 with the same producer/API workload before keeping extra consumers enabled.

@@ -24,7 +24,9 @@ Group solution for the Cloud and Edge Computing Temperature Observability assign
 See [the team handoff](docs/team-handoff.md) for the current deployment, demo
 checklist, and optional setup for other personal VMs. The
 [four-VM workflow](docs/four-vm-workflow.md) gives each teammate the exact
-connection and coordinated load-test steps.
+connection and coordinated load-test steps. Optional
+[personal consumer setup](docs/personal-consumer-setup.md) explains the
+restricted database tunnel if distributing Kafka processing proves useful.
 
 ## Credentials
 
