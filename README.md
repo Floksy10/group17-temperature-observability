@@ -55,5 +55,29 @@ For development with the course producer image, set
 `NOTIFICATIONS_URL=http://notifications-mock:3000/api/notify` in `.env` and run
 `docker compose --profile test --env-file .env -f deploy/compose.yaml up -d --build`.
 The mock checks the HTTP request but cannot validate the encrypted
-`measurement_hash`. Switch the URL back to the real course service for the
-demo topic, whose producer uses the course server's encryption key.
+`measurement_hash`. Before the course demo, switch the URL back to the real
+course service and verify one notification using events from the `experiment`
+topic. The development producer's hashes were rejected by the real service,
+so the mock test alone does not prove that the real notification path works.
+
+## Repeat the load test
+
+On the group VM, with the development topic and mock receiver selected in
+`.env`, create 100 simultaneous experiments with two sensors sampled once per
+second for 20 measurements:
+
+```bash
+cd ~/group17-temperature-observability
+python3 scripts/generate_experiments.py --count 100 --samples 20 > /tmp/group17-load.json
+docker run -d --name group17-load \
+  --mount type=bind,source="$HOME/group17-auth",target=/experiment-producer/auth,readonly \
+  --mount type=bind,source=/tmp/group17-load.json,target=/experiment-producer/load.json,readonly \
+  dclandau/cec-experiment-producer \
+  --config-file /experiment-producer/load.json \
+  --topic group17 --brokers kafka.cec.dlandau.nl:19092
+docker wait group17-load
+```
+
+The container name must be changed or the old stopped container removed before
+running the command again. The measured results and verification queries are in
+[the performance notes](docs/performance.md).

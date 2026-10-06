@@ -39,6 +39,8 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     volumes:
       - ${KAFKA_AUTH_DIR:-/home/ubuntu/group17-auth}:/app/auth:ro
+    deploy:
+      replicas: 4
     logging:
       options:
         max-size: "10m"
