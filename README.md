@@ -22,7 +22,9 @@ Group solution for the Cloud and Edge Computing Temperature Observability assign
 - `docs/` — architecture and operating notes.
 
 See [the team handoff](docs/team-handoff.md) for the current deployment, demo
-checklist, and optional setup for other personal VMs.
+checklist, and optional setup for other personal VMs. The
+[four-VM workflow](docs/four-vm-workflow.md) gives each teammate the exact
+connection and coordinated load-test steps.
 
 ## Credentials
 

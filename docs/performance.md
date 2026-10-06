@@ -26,9 +26,73 @@ the shared PostgreSQL database through an SSH tunnel; network and database
 contention can outweigh the extra CPU. Do not assume that adding the two other
 personal VMs will improve performance without measuring it.
 
-These results cover the specified 100 concurrent
-experiments at a one-second interval; larger sensor counts, longer runs and the
-real Notifications API still require validation.
+Additional single-run stress checks explored larger sensor counts and faster
+sampling. Each used a fresh set of 100 experiments with 20 historic measurements
+per experiment. Except where marked "no API load", 2,000 API requests at
+concurrency 50 were sent during the producer run. Every run stored all 2,000 historic
+measurements, finished all 100 experiments, and drained the pending-reading and
+notification queues. All API requests completed successfully. These results
+measure the local mock receiver, not the real Notifications API.
+
+| Sensors | Sampling | Consumers | Kafka commit | API pool per worker | API load | Notification p95 | Notification max | API requests/s | API p95 |
+| ---: | ---: | ---: | --- | ---: | --- | ---: | ---: | ---: | ---: |
+| 4 | 1 s | 4 | synchronous | 15 | 2,000/50 | 14.805 s | 15.270 s | 106.6 | 665.7 ms |
+| 4 | 1 s | 8 | synchronous | 15 | 2,000/50 | 14.757 s | 16.193 s | 74.4 | 1,017.1 ms |
+| 4 | 1 s | 4 | asynchronous | 15 | 2,000/50 | 11.247 s | 11.814 s | 99.6 | 782.2 ms |
+| 4 | 1 s | 8 | asynchronous | 15 | 2,000/50 | 15.492 s | 16.477 s | 69.4 | 926.7 ms |
+| 4 | 1 s | 4 | asynchronous | 15 | no API load | 8.704 s | 9.019 s | — | — |
+| 4 | 1 s | 4 | asynchronous | 5 | 2,000/50 | 16.545 s | 17.606 s | 92.8 | 818.7 ms |
+| 2 | 0.5 s | 4 | asynchronous | 15 | 2,000/50 | 12.714 s | 14.248 s | 78.0 | 765.6 ms |
+| 2 | 1 s | 4 | asynchronous | 15 | 2,000/50 | 11.885 s | 13.126 s | 72.7 | 993.0 ms |
+| 2 | 1 s | 4 | synchronous | 15 | 2,000/50 | 5.249 s | 6.669 s | 100.7 | 800.8 ms |
+
+With four sensors, synchronous commits and the standard API load, the delay
+from measurement timestamp to outbox creation was 14.604 s at p95; delivery
+from outbox creation to the mock receiver took 0.243 s at p95. This locates the
+delay in ingestion and aggregation, not in the notifier. Turning off INFO logs
+in one otherwise identical run reduced notification p95 only to 13.832 s.
+
+The retained configuration is four consumers, synchronous Kafka commits,
+the 15-connection API pool per worker, and INFO logs. It repeatedly met the
+ten-second target for the two-sensor, one-second scenario. The tested heavier
+profiles did not consistently meet the target; supporting those workloads
+under simultaneous HTTP load needs further ingestion or database optimization.
+These are observations from individual short runs, not a guarantee about every
+possible experiment or the real Notifications API.
+
+Two additional runs moved both the development producer and the 2,000-request
+API load client from the group VM to Nick's VM. The group VM kept four
+consumers, synchronous commits, the 15-connection API pool and INFO logs.
+Both runs stored all 2,000 historic measurements and completed all requests:
+
+| Location of test clients | Sensors | Notification p95 | Notification max | API requests/s | API p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Nick VM, first run | 4 | 9.690 s | 11.466 s | 177.9 | 370.4 ms |
+| Nick VM, second run | 4 | 13.775 s | 13.997 s | 162.6 | 536.3 ms |
+
+Moving the test clients off the group VM improved API throughput in these
+runs, but notification latency still varied and the ten-second maximum was
+not consistently met. The [four-VM workflow](four-vm-workflow.md) assigns
+Ibrahim and Yorick separate API load clients so the group can test that
+division of work without adding database tunnels first.
+
+To reproduce a four-sensor producer run from the group VM, while the development
+topic and local mock receiver are selected in `.env`:
+
+```bash
+cd ~/group17-temperature-observability
+python3 scripts/generate_experiments.py --count 100 --sensors 4 \
+  --sample-rate-ms 1000 --samples 20 > /tmp/group17-100x4.json
+docker run --name group17-100x4-demo \
+  --mount type=bind,source="$HOME/group17-auth",target=/experiment-producer/auth,readonly \
+  --mount type=bind,source=/tmp/group17-100x4.json,target=/experiment-producer/load.json,readonly \
+  dclandau/cec-experiment-producer \
+  --topic group17 --brokers kafka.cec.dlandau.nl:19092 \
+  --config-file /experiment-producer/load.json
+```
+
+Use a new container name for every run, or remove the previous stopped
+container with `docker rm group17-100x4-demo`.
 
 To check cumulative state after a run, connect to PostgreSQL on the group VM:
 

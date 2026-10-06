@@ -79,6 +79,20 @@ the ten-second target but was slower: 6.773 s p95 and 9.579 s maximum.
 Full commands and results are in [performance.md](performance.md). Keep four
 group VM consumers as the measured baseline; use personal VMs only after a
 matching load test demonstrates a benefit for the intended workload.
+The baseline was repeated with 5.249 s p95 and 6.669 s maximum latency.
+Stress tests with four sensors per experiment or 0.5-second sampling still
+completed without missing records, but notification p95 exceeded ten seconds
+under simultaneous API load. Scaling to eight consumers, asynchronous Kafka
+commits, and a smaller API connection pool did not consistently help, so none
+of those experimental settings is enabled. The heavier workloads need more
+ingestion or database work before claiming the ten-second target for them.
+Moving the development producer and API load to Nick's VM increased measured
+API throughput, but notification latency varied across two runs. Start with
+the [four-VM workflow](four-vm-workflow.md): Nick runs the producer, Ibrahim
+and Yorick each run an API load client, and the group VM runs the service.
+This connects all four VMs without exposing the database. Only consider
+personal consumer replicas after repeating the same workload and comparing
+notification latency and API throughput.
 
 ## Before the course demo
 
