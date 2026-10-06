@@ -79,10 +79,16 @@
 
         chart.append(element('line', {x1: 60, y1: 290, x2: 860, y2: 290, class: 'axis'}));
         chart.append(element('line', {x1: 60, y1: 50, x2: 60, y2: 290, class: 'axis'}));
-        chart.append(element('text', {x: 8, y: 55, fill: '#bac6d8'})).textContent = maxTemp.toFixed(1) + ' °C';
-        chart.append(element('text', {x: 8, y: 292, fill: '#bac6d8'})).textContent = minTemp.toFixed(1) + ' °C';
-        chart.append(element('text', {x: 60, y: 320, fill: '#bac6d8'})).textContent = new Date(minTime * 1000).toLocaleTimeString();
-        chart.append(element('text', {x: 760, y: 320, fill: '#bac6d8'})).textContent = new Date(maxTime * 1000).toLocaleTimeString();
+        for (const [xPosition, yPosition, label] of [
+          [8, 55, maxTemp.toFixed(1) + ' °C'],
+          [8, 292, minTemp.toFixed(1) + ' °C'],
+          [60, 320, new Date(minTime * 1000).toLocaleTimeString()],
+          [760, 320, new Date(maxTime * 1000).toLocaleTimeString()]
+        ]) {
+          const text = element('text', {x: xPosition, y: yPosition, fill: '#bac6d8'});
+          text.textContent = label;
+          chart.append(text);
+        }
         chart.append(element('polyline', {
           points: points.map(point => `${x(point.timestamp)},${y(point.temperature)}`).join(' '),
           class: 'line'
@@ -92,8 +98,10 @@
             cx: x(point.timestamp), cy: y(point.temperature), r: 5,
             class: alertTimes.has(point.timestamp) ? 'alert' : 'point'
           });
-          circle.append(element('title', {})).textContent =
+          const title = element('title', {});
+          title.textContent =
             `${new Date(point.timestamp * 1000).toLocaleString()} · ${point.temperature.toFixed(2)} °C`;
+          circle.append(title);
           chart.append(circle);
         }
       } catch (error) {
