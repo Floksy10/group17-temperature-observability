@@ -61,6 +61,10 @@ def send_next(connection: psycopg.Connection, session: requests.Session) -> bool
                 response.raise_for_status()
             except requests.RequestException as error:
                 backoff = min(2 ** min(notification["attempts"] + 1, 6), 60)
+                # requests exceptions can include the full URL, including its token.
+                error_summary = type(error).__name__
+                if error.response is not None:
+                    error_summary += f" HTTP {error.response.status_code}"
                 cursor.execute(
                     """
                     UPDATE notification_outbox
@@ -69,7 +73,7 @@ def send_next(connection: psycopg.Connection, session: requests.Session) -> bool
                         last_error = %s
                     WHERE id = %s
                     """,
-                    (backoff, str(error)[:500], notification["id"]),
+                    (backoff, error_summary, notification["id"]),
                 )
                 LOGGER.warning(
                     "notification_failed type=%s experiment=%s retry_seconds=%s",
