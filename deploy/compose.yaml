@@ -84,6 +84,17 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  notifications-mock:
+    profiles: [test]
+    build:
+      context: ../services/mock_notifications
+    restart: unless-stopped
+    read_only: true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   node-exporter:
     image: prom/node-exporter:v1.9.0
     restart: unless-stopped

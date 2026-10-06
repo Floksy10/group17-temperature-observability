@@ -34,8 +34,8 @@ random hexadecimal string, `KAFKA_TOPIC=group17`, and the paths to the group
 Kafka credential directory and notification token. Then run:
 
 ```bash
-docker compose -f deploy/compose.yaml up -d --build
-docker compose -f deploy/compose.yaml ps
+docker compose --env-file .env -f deploy/compose.yaml up -d --build
+docker compose --env-file .env -f deploy/compose.yaml ps
 ```
 
 The API serves `http://<group-vm-ip>:3003/temperature`,
@@ -50,3 +50,10 @@ consumer. The group credentials can only read that topic, so local tests use
 The consumer stores each Kafka event in PostgreSQL before committing its
 offset. A separate notifier sends durable notification requests with retries.
 The REST API excludes stabilization measurements from historic results.
+
+For development with the course producer image, set
+`NOTIFICATIONS_URL=http://notifications-mock:3000/api/notify` in `.env` and run
+`docker compose --profile test --env-file .env -f deploy/compose.yaml up -d --build`.
+The mock checks the HTTP request but cannot validate the encrypted
+`measurement_hash`. Switch the URL back to the real course service for the
+demo topic, whose producer uses the course server's encryption key.
