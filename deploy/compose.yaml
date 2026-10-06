@@ -1,6 +1,24 @@
 name: group17-temperature-observability
 
 services:
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: temperature
+      POSTGRES_USER: temperature
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    ports:
+      - "${DATABASE_BIND_IP:-127.0.0.1}:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temperature -d temperature"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   consumer:
     build:
       context: ../services/consumer
@@ -8,11 +26,16 @@ services:
     restart: unless-stopped
     init: true
     read_only: true
+    depends_on:
+      database:
+        condition: service_healthy
     environment:
       KAFKA_BROKERS: ${KAFKA_BROKERS:-kafka.cec.dlandau.nl:19092,kafka.cec.dlandau.nl:29092,kafka.cec.dlandau.nl:39092}
       KAFKA_TOPIC: ${KAFKA_TOPIC:-group17}
       KAFKA_GROUP_ID: ${KAFKA_GROUP_ID:-group17-temperature-observability}
       KAFKA_AUTH_DIR: /app/auth
+      DATABASE_URL: postgresql://temperature:${POSTGRES_PASSWORD}@database:5432/temperature
+      METRICS_PORT: "8001"
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     volumes:
       - ${KAFKA_AUTH_DIR:-/home/ubuntu/group17-auth}:/app/auth:ro
@@ -20,3 +43,71 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  api:
+    build:
+      context: ../services/api
+    image: group17/temperature-api:dev
+    restart: unless-stopped
+    read_only: true
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://temperature:${POSTGRES_PASSWORD}@database:5432/temperature
+    ports:
+      - "${API_PORT:-3003}:3003"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  notifier:
+    build:
+      context: ../services/notifier
+    image: group17/temperature-notifier:dev
+    restart: unless-stopped
+    read_only: true
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://temperature:${POSTGRES_PASSWORD}@database:5432/temperature
+      NOTIFICATIONS_URL: ${NOTIFICATIONS_URL:-https://notifications.cec.dlandau.nl/api/notify}
+      NOTIFICATIONS_TOKEN_FILE: /run/secrets/notification_token
+    volumes:
+      - ${NOTIFICATIONS_TOKEN_PATH:-/home/ubuntu/group17-auth/token}:/run/secrets/notification_token:ro
+    deploy:
+      replicas: 3
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.0
+    restart: unless-stopped
+    command: ["--path.rootfs=/host"]
+    volumes:
+      - /:/host:ro,rslave
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "3008:9090"
+    depends_on:
+      - node-exporter
+      - api
+      - consumer
+
+volumes:
+  postgres_data:
+  prometheus_data:

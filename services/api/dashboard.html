@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Group 17 · Temperature</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101827; color: #edf2fa; }
+    body { max-width: 1050px; margin: 0 auto; padding: 32px 20px; }
+    h1 { margin-bottom: 4px; }
+    p { color: #bac6d8; }
+    form { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+    input, button { padding: 12px; border-radius: 8px; border: 1px solid #48566e; background: #1d293b; color: white; font: inherit; }
+    input { flex: 1 1 360px; }
+    button { cursor: pointer; background: #2760bd; border-color: #2760bd; }
+    .panel { border: 1px solid #33445d; background: #172234; padding: 18px; border-radius: 12px; }
+    svg { width: 100%; height: auto; }
+    .axis { stroke: #627087; stroke-width: 1; }
+    .line { fill: none; stroke: #73b8ff; stroke-width: 3; }
+    .point { fill: #73b8ff; }
+    .alert { fill: #ff7069; }
+    #status { min-height: 24px; }
+  </style>
+</head>
+<body>
+  <h1>Temperature history</h1>
+  <p>Enter an experiment ID to see its measured average temperature. Red dots mark measurements outside its allowed range. The chart updates every five seconds.</p>
+  <form id="form">
+    <input id="experiment" aria-label="Experiment ID" placeholder="Experiment ID" required>
+    <button type="submit">Show graph</button>
+  </form>
+  <div class="panel">
+    <p id="status">Enter an experiment ID.</p>
+    <svg id="chart" viewBox="0 0 900 350" role="img" aria-label="Temperature over time"></svg>
+  </div>
+  <script>
+    const form = document.getElementById('form');
+    const input = document.getElementById('experiment');
+    const status = document.getElementById('status');
+    const chart = document.getElementById('chart');
+    const params = new URLSearchParams(location.search);
+    input.value = params.get('experiment-id') || '';
+
+    function element(name, attributes) {
+      const node = document.createElementNS('http://www.w3.org/2000/svg', name);
+      for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+      return node;
+    }
+
+    async function refresh() {
+      const id = input.value.trim();
+      if (!id) return;
+      const historyQuery = new URLSearchParams({
+        'experiment-id': id, 'start-time': '0',
+        'end-time': String(Date.now() / 1000 + 86400)
+      });
+      const alertQuery = new URLSearchParams({'experiment-id': id});
+      try {
+        const [historyResponse, alertResponse] = await Promise.all([
+          fetch('/temperature?' + historyQuery),
+          fetch('/temperature/out-of-range?' + alertQuery)
+        ]);
+        if (!historyResponse.ok || !alertResponse.ok) throw new Error('API request failed');
+        const points = await historyResponse.json();
+        const alerts = await alertResponse.json();
+        chart.replaceChildren();
+        status.textContent = points.length
+          ? `${points.length} measurements · ${alerts.length} outside range`
+          : 'No measurements after this experiment started yet.';
+        if (!points.length) return;
+
+        const alertTimes = new Set(alerts.map(point => point.timestamp));
+        const minTime = Math.min(...points.map(point => point.timestamp));
+        const maxTime = Math.max(...points.map(point => point.timestamp));
+        const minTemp = Math.min(...points.map(point => point.temperature)) - 0.5;
+        const maxTemp = Math.max(...points.map(point => point.temperature)) + 0.5;
+        const x = value => 60 + (value - minTime) / (maxTime - minTime || 1) * 800;
+        const y = value => 290 - (value - minTemp) / (maxTemp - minTemp || 1) * 240;
+
+        chart.append(element('line', {x1: 60, y1: 290, x2: 860, y2: 290, class: 'axis'}));
+        chart.append(element('line', {x1: 60, y1: 50, x2: 60, y2: 290, class: 'axis'}));
+        chart.append(element('text', {x: 8, y: 55, fill: '#bac6d8'})).textContent = maxTemp.toFixed(1) + ' °C';
+        chart.append(element('text', {x: 8, y: 292, fill: '#bac6d8'})).textContent = minTemp.toFixed(1) + ' °C';
+        chart.append(element('text', {x: 60, y: 320, fill: '#bac6d8'})).textContent = new Date(minTime * 1000).toLocaleTimeString();
+        chart.append(element('text', {x: 760, y: 320, fill: '#bac6d8'})).textContent = new Date(maxTime * 1000).toLocaleTimeString();
+        chart.append(element('polyline', {
+          points: points.map(point => `${x(point.timestamp)},${y(point.temperature)}`).join(' '),
+          class: 'line'
+        }));
+        for (const point of points) {
+          const circle = element('circle', {
+            cx: x(point.timestamp), cy: y(point.temperature), r: 5,
+            class: alertTimes.has(point.timestamp) ? 'alert' : 'point'
+          });
+          circle.append(element('title', {})).textContent =
+            `${new Date(point.timestamp * 1000).toLocaleString()} · ${point.temperature.toFixed(2)} °C`;
+          chart.append(circle);
+        }
+      } catch (error) {
+        status.textContent = `Unable to load graph: ${error.message}`;
+      }
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      history.replaceState(null, '', '/dashboard?experiment-id=' + encodeURIComponent(input.value.trim()));
+      refresh();
+    });
+    if (input.value) refresh();
+    setInterval(refresh, 5000);
+  </script>
+</body>
+</html>

@@ -4,10 +4,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+COPY notifier.py .
 
-COPY consumer.py processor.py storage.py ./
-
-ENTRYPOINT ["python", "/app/consumer.py"]
+CMD ["python", "notifier.py"]

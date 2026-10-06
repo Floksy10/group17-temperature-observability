@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import io
-import json
 import logging
 import os
 import signal
@@ -12,8 +11,10 @@ from pathlib import Path
 from avro.datafile import DataFileReader
 from avro.io import DatumReader
 from confluent_kafka import Consumer, KafkaError, KafkaException, Message
+from prometheus_client import Counter, Histogram, start_http_server
+from psycopg_pool import ConnectionPool
 
-from processor import ExperimentProcessor
+from storage import process_event
 
 
 logging.basicConfig(
@@ -25,7 +26,14 @@ LOGGER = logging.getLogger("group17-consumer")
 AUTH_DIR = Path(os.getenv("KAFKA_AUTH_DIR", "/app/auth"))
 PROPERTIES_FILE = AUTH_DIR / "client-ssl.properties"
 RUNNING = True
-PROCESSOR = ExperimentProcessor()
+EVENTS = Counter("group17_kafka_events_total", "Processed Kafka events", ["event"])
+AGGREGATES = Counter(
+    "group17_measurements_total", "Completed experiment measurements"
+)
+PROCESSING = Histogram(
+    "group17_event_processing_seconds", "Database processing per Kafka event"
+)
+ERRORS = Counter("group17_processing_errors_total", "Failed Kafka events")
 
 
 def load_properties(path: Path) -> dict[str, str]:
@@ -82,36 +90,29 @@ def decode_records(payload: bytes | None) -> list[dict[str, object]]:
         return list(reader)
 
 
-def process_message(message: Message) -> None:
+def process_message(message: Message, pool: ConnectionPool) -> None:
     name = record_name(message)
     records = decode_records(message.value())
-    for record in records:
-        LOGGER.info(
-            "event=%s partition=%s offset=%s data=%s",
-            name,
-            message.partition(),
-            message.offset(),
-            json.dumps(record, sort_keys=True),
-        )
-
-        if name == "experiment_configured":
-            PROCESSOR.configure(record)
-        elif name == "experiment_started":
-            PROCESSOR.start(record)
-        elif name == "sensor_temperature_measured":
-            measurement = PROCESSOR.add_measurement(record)
-            if measurement is not None:
+    with pool.connection() as connection:
+        for record in records:
+            with PROCESSING.time():
+                result = process_event(connection, name, record)
+            EVENTS.labels(name).inc()
+            if result is not None:
+                AGGREGATES.inc()
                 LOGGER.info(
                     "measurement_aggregated experiment=%s measurement_id=%s "
-                    "average_temperature=%.3f out_of_range=%s started=%s",
-                    measurement.experiment,
-                    measurement.measurement_id,
-                    measurement.average_temperature,
-                    measurement.out_of_range,
-                    measurement.experiment_started,
+                    "temperature=%.3f out_of_range=%s during_experiment=%s "
+                    "notification=%s",
+                    result.experiment_id,
+                    result.measurement_id,
+                    result.temperature,
+                    result.out_of_range,
+                    result.during_experiment,
+                    result.notification_type,
                 )
-        elif name == "experiment_terminated":
-            PROCESSOR.terminate(record)
+            elif name != "sensor_temperature_measured":
+                LOGGER.info("event=%s experiment=%s", name, record["experiment"])
 
 
 def stop(_signum: int, _frame: object) -> None:
@@ -124,32 +125,36 @@ def main() -> None:
     signal.signal(signal.SIGINT, stop)
 
     topic = os.getenv("KAFKA_TOPIC", "group17")
-    consumer = Consumer(kafka_configuration())
-    consumer.subscribe([topic])
-    LOGGER.info("consumer_started topic=%s", topic)
+    start_http_server(int(os.getenv("METRICS_PORT", "8001")))
+    with ConnectionPool(os.environ["DATABASE_URL"], min_size=1, max_size=2) as pool:
+        pool.wait(timeout=30)
+        consumer = Consumer(kafka_configuration())
+        consumer.subscribe([topic])
+        LOGGER.info("consumer_started topic=%s", topic)
 
-    try:
-        while RUNNING:
-            message = consumer.poll(1.0)
-            if message is None:
-                continue
-            if message.error():
-                if message.error().code() == KafkaError._PARTITION_EOF:
+        try:
+            while RUNNING:
+                message = consumer.poll(1.0)
+                if message is None:
                     continue
-                raise KafkaException(message.error())
+                if message.error():
+                    if message.error().code() == KafkaError._PARTITION_EOF:
+                        continue
+                    raise KafkaException(message.error())
 
-            try:
-                process_message(message)
-                consumer.commit(message=message, asynchronous=False)
-            except Exception:
-                LOGGER.exception(
-                    "message_processing_failed partition=%s offset=%s",
-                    message.partition(),
-                    message.offset(),
-                )
-    finally:
-        consumer.close()
-        LOGGER.info("consumer_stopped")
+                try:
+                    process_message(message, pool)
+                    consumer.commit(message=message, asynchronous=False)
+                except Exception:
+                    ERRORS.inc()
+                    LOGGER.exception(
+                        "message_processing_failed partition=%s offset=%s",
+                        message.partition(),
+                        message.offset(),
+                    )
+        finally:
+            consumer.close()
+            LOGGER.info("consumer_stopped")
 
 
 if __name__ == "__main__":
