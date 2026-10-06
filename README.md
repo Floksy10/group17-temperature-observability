@@ -21,6 +21,9 @@ Group solution for the Cloud and Edge Computing Temperature Observability assign
 - `tests/` — automated and integration tests.
 - `docs/` — architecture and operating notes.
 
+See [the team handoff](docs/team-handoff.md) for the current deployment, demo
+checklist, and optional setup for other personal VMs.
+
 ## Credentials
 
 Credentials and tokens must not be committed. On the group VM they are stored in `/home/ubuntu/group17-auth` and should be mounted read-only into containers that need them.

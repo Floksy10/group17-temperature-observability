@@ -1,0 +1,25 @@
+name: group17-personal-consumer
+
+services:
+  consumer:
+    build:
+      context: ../services/consumer
+    image: group17/temperature-consumer:dev
+    restart: unless-stopped
+    init: true
+    read_only: true
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      KAFKA_BROKERS: ${KAFKA_BROKERS:-kafka.cec.dlandau.nl:19092,kafka.cec.dlandau.nl:29092,kafka.cec.dlandau.nl:39092}
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-group17}
+      KAFKA_GROUP_ID: ${KAFKA_GROUP_ID:-group17-temperature-observability}
+      KAFKA_AUTH_DIR: /app/auth
+      DATABASE_URL: postgresql://temperature:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.personal}@host.docker.internal:15432/temperature
+      METRICS_PORT: "8001"
+    volumes:
+      - ${KAFKA_AUTH_DIR:-/home/ubuntu/group17-auth}:/app/auth:ro
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"

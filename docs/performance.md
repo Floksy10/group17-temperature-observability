@@ -16,10 +16,17 @@ timestamp to the time the mock receiver accepted the notification.
 | 1 | 2,000 | 0 | 0 | 19.559 s | 20.319 s | 147.9 | 567.7 ms |
 | 3 | 2,000 | 0 | 0 | 8.450 s | 9.594 s | 105.5 | 706.7 ms |
 | 4 | 2,000 | 0 | 0 | 5.549 s | 6.693 s | 115.6 | 679.3 ms |
+| 4 on group VM + 1 on Nick's VM | 2,000 | 0 | 0 | 6.773 s | 9.579 s | 100.7 | 860.7 ms |
 
 Four consumers met the assignment's ten-second notification latency target in
 this test, with more margin than three. Docker Compose keeps four consumers as
-the default replica count. These results cover the specified 100 concurrent
+the default replica count on the group VM. A fifth consumer on Nick's VM also
+met the limit, but did not improve latency or API throughput. That VM reaches
+the shared PostgreSQL database through an SSH tunnel; network and database
+contention can outweigh the extra CPU. Do not assume that adding the two other
+personal VMs will improve performance without measuring it.
+
+These results cover the specified 100 concurrent
 experiments at a one-second interval; larger sensor counts, longer runs and the
 real Notifications API still require validation.
 
