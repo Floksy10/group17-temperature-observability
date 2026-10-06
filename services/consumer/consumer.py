@@ -6,6 +6,7 @@ import io
 import logging
 import os
 import signal
+import socket
 from pathlib import Path
 
 from avro.datafile import DataFileReader
@@ -66,6 +67,7 @@ def kafka_configuration() -> dict[str, object]:
         "group.id": os.getenv(
             "KAFKA_GROUP_ID", "group17-temperature-observability"
         ),
+        "client.id": os.getenv("KAFKA_CLIENT_ID", socket.gethostname()),
         "auto.offset.reset": os.getenv("KAFKA_OFFSET_RESET", "latest"),
         "enable.auto.commit": False,
         "security.protocol": "SSL",

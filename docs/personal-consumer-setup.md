@@ -151,6 +151,7 @@ contents, not terminal commands:
 POSTGRES_PASSWORD=<password-from-group-maintainer>
 KAFKA_TOPIC=group17
 KAFKA_GROUP_ID=group17-temperature-observability
+KAFKA_CLIENT_ID=<ibrahim-or-yorick>-consumer
 KAFKA_AUTH_DIR=/home/ubuntu/group17-auth
 ```
 
