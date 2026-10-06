@@ -39,9 +39,14 @@ docker compose --env-file .env -f deploy/compose.yaml ps
 ```
 
 The API serves `http://<group-vm-ip>:3003/temperature`,
-`/temperature/out-of-range`, `/health`, and `/dashboard`. The dashboard plots
-stored temperature history for an experiment ID. Prometheus listens on port
-`3008` for the course Grafana infrastructure dashboard.
+`/temperature/out-of-range`, `/health`, `/dashboard`, and `/costs`. The
+temperature dashboard plots stored history for an experiment ID. The cost
+dashboard shows observed CPU and memory usage and an estimated running compute
+cost over time. Prometheus listens on port `3008` for infrastructure monitoring.
+`VM_HOURLY_COST_USD` in `.env` controls the estimate; the default is $0.0408
+for the group VM's t3a.medium in eu-west-1. This is an EC2 compute estimate,
+not the full AWS bill. Storage, network, public IPv4, CPU credits, taxes and
+discounts are excluded.
 
 For the course demo, set `KAFKA_TOPIC=experiment` in `.env` and recreate the
 consumer. The group credentials can only read that topic, so local tests use

@@ -57,6 +57,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://temperature:${POSTGRES_PASSWORD}@database:5432/temperature
+      PROMETHEUS_URL: http://prometheus:9090
+      VM_HOURLY_COST_USD: ${VM_HOURLY_COST_USD:-0.0408}
     ports:
       - "${API_PORT:-3003}:3003"
     logging:

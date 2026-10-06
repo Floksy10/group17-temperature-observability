@@ -11,6 +11,8 @@ from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
 from starlette.responses import HTMLResponse, Response
 
+from costs import build_cost_overview
+
 
 REQUESTS = Counter(
     "group17_http_requests_total", "HTTP requests", ["path", "status"]
@@ -104,3 +106,16 @@ def metrics() -> Response:
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard() -> HTMLResponse:
     return HTMLResponse(Path("/app/dashboard.html").read_text(encoding="utf-8"))
+
+
+@app.get("/costs", response_class=HTMLResponse)
+def costs_dashboard() -> HTMLResponse:
+    return HTMLResponse(Path("/app/costs.html").read_text(encoding="utf-8"))
+
+
+@app.get("/costs/data")
+def costs_data(hours: int = Query(default=1, ge=1, le=168)) -> dict:
+    try:
+        return build_cost_overview(hours)
+    except (OSError, ValueError) as error:
+        raise HTTPException(503, "Monitoring data is temporarily unavailable") from error

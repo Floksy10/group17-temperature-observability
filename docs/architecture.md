@@ -34,3 +34,8 @@ The group VM exposes the API and Prometheus. A personal VM can later run an
 additional consumer using the same database and Kafka group. PostgreSQL is
 currently bound to loopback by default; multi-VM deployment needs a private
 network path to it and suitable access control.
+
+The `/costs` page queries the group's Prometheus instance for node-exporter
+availability, CPU and memory samples. It integrates observed running time at
+the configured EC2 hourly rate and deliberately omits monitoring gaps. It is
+an estimate of compute cost over the selected window, not an AWS invoice.

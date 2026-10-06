@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Group 17 · Infrastructure cost</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101827; color: #edf2fa; }
+    body { max-width: 1050px; margin: 0 auto; padding: 32px 20px; }
+    h1 { margin-bottom: 4px; }
+    p, small { color: #bac6d8; }
+    a { color: #73b8ff; }
+    select { padding: 9px; border-radius: 8px; background: #1d293b; color: white; border: 1px solid #48566e; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 22px 0; }
+    .card, .panel { border: 1px solid #33445d; background: #172234; padding: 18px; border-radius: 12px; }
+    .value { font-size: 1.6rem; font-weight: 700; margin: 8px 0 0; }
+    .panel { margin: 16px 0; }
+    svg { width: 100%; height: auto; }
+    .axis { stroke: #627087; stroke-width: 1; }
+    .cost { fill: none; stroke: #72d6b6; stroke-width: 3; }
+    .cpu { fill: none; stroke: #73b8ff; stroke-width: 2.5; }
+    .memory { fill: none; stroke: #ffbf73; stroke-width: 2.5; }
+  </style>
+</head>
+<body>
+  <p><a href="/dashboard">← Temperature history</a></p>
+  <h1>Infrastructure cost and usage</h1>
+  <p>Group VM · t3a.medium · eu-west-1. Estimate covers EC2 compute while the VM is observed running; it is not the AWS bill.</p>
+  <label for="hours">Period:</label>
+  <select id="hours"><option value="1">Last hour</option><option value="6">Last 6 hours</option><option value="24">Last day</option><option value="168">Last week</option></select>
+  <div class="cards">
+    <div class="card"><small>Estimated compute cost in period</small><div id="cost" class="value">—</div></div>
+    <div class="card"><small>Configured hourly rate</small><div id="rate" class="value">—</div></div>
+    <div class="card"><small>Current CPU usage</small><div id="cpu" class="value">—</div></div>
+    <div class="card"><small>Current memory usage</small><div id="memory" class="value">—</div></div>
+  </div>
+  <div class="panel"><h2>Estimated cumulative compute cost</h2><svg id="costChart" viewBox="0 0 900 280" role="img" aria-label="Estimated compute cost over time"></svg></div>
+  <div class="panel"><h2>Resource usage</h2><p>CPU <span style="color:#73b8ff">━━</span> · Memory <span style="color:#ffbf73">━━</span></p><svg id="usageChart" viewBox="0 0 900 280" role="img" aria-label="CPU and memory usage over time"></svg></div>
+  <p id="status">Loading…</p>
+  <small>The hourly rate is configurable. Storage, public IPv4, network traffic, CPU credit charges, taxes and discounts are excluded. Gaps in monitoring data are not counted.</small>
+  <script>
+    const period = document.getElementById('hours');
+    const status = document.getElementById('status');
+    const money = value => '$' + value.toFixed(4);
+    function svgElement(name, attributes) {
+      const node = document.createElementNS('http://www.w3.org/2000/svg', name);
+      for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+      return node;
+    }
+    function plot(svg, points, series) {
+      svg.replaceChildren();
+      if (points.length < 2) return;
+      const first = points[0].timestamp;
+      const last = points[points.length - 1].timestamp;
+      const max = Math.max(1e-6, ...series.flatMap(item => points.map(point => point[item.key] || 0)), series[0].fixedMax || 0);
+      const x = time => 55 + (time - first) / (last - first || 1) * 810;
+      const y = value => 225 - value / max * 185;
+      svg.append(svgElement('line', {x1:55, y1:225, x2:865, y2:225, class:'axis'}));
+      svg.append(svgElement('line', {x1:55, y1:40, x2:55, y2:225, class:'axis'}));
+      for (const [tx, ty, label] of [[5,45,max.toFixed(2)],[5,227,'0'],[55,255,new Date(first*1000).toLocaleTimeString()],[735,255,new Date(last*1000).toLocaleTimeString()]]) {
+        const node = svgElement('text',{x:tx,y:ty,fill:'#bac6d8'});
+        node.textContent = label; svg.append(node);
+      }
+      for (const item of series) {
+        const valid = points.filter(point => point[item.key] !== null);
+        svg.append(svgElement('polyline', {
+          points:valid.map(point => `${x(point.timestamp)},${y(point[item.key])}`).join(' '),
+          class:item.className
+        }));
+      }
+    }
+    async function refresh() {
+      try {
+        const response = await fetch('/costs/data?hours=' + period.value);
+        if (!response.ok) throw new Error('Monitoring service unavailable');
+        const data = await response.json();
+        const latest = data.points[data.points.length-1];
+        document.getElementById('cost').textContent = money(data.estimated_compute_cost_usd);
+        document.getElementById('rate').textContent = money(data.hourly_rate_usd) + '/h';
+        document.getElementById('cpu').textContent = latest.cpu_percent === null ? '—' : latest.cpu_percent.toFixed(1) + '%';
+        document.getElementById('memory').textContent = latest.memory_percent === null ? '—' : latest.memory_percent.toFixed(1) + '%';
+        plot(document.getElementById('costChart'), data.points, [{key:'estimated_compute_cost_usd',className:'cost'}]);
+        plot(document.getElementById('usageChart'), data.points, [{key:'cpu_percent',className:'cpu',fixedMax:100},{key:'memory_percent',className:'memory'}]);
+        status.textContent = `${data.points.length} monitoring samples · updated ${new Date().toLocaleTimeString()}`;
+      } catch (error) { status.textContent = error.message; }
+    }
+    period.addEventListener('change', refresh);
+    refresh(); setInterval(refresh, 30000);
+  </script>
+</body>
+</html>
