@@ -1,0 +1,57 @@
+{
+  "checked_utc_epoch": 1791571288.7282655,
+  "healthy": true,
+  "container": "49caedd45e5f7e3031f8e2253e10e950ae0c491022cbb0c41c9d9b04b8373e6f",
+  "image": "sha256:ec7e6f3b4f47802122bd9a941c8912184e07e5373da7487983eda1fda76d4a07",
+  "command": [
+    "uvicorn",
+    "app:app",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "3003",
+    "--workers",
+    "2",
+    "--loop",
+    "uvloop",
+    "--http",
+    "httptools",
+    "--no-access-log"
+  ],
+  "app_sha256": "32eeb7da3bdf676c1494c0bcaa35cf547a49aa52f107e64c1a82fc82796de3ec",
+  "real_history_correct": true,
+  "invalid_queries_return_422": true,
+  "metric_snapshots_consistent": true,
+  "metric_snapshots": [
+    {
+      "group17_http_requests_total{path=\"/temperature\",status=\"200\"}": 6.0,
+      "group17_http_requests_total{path=\"/temperature/out-of-range\",status=\"200\"}": 1.0,
+      "group17_http_requests_total{path=\"/temperature\",status=\"422\"}": 2.0
+    },
+    {
+      "group17_http_requests_total{path=\"/temperature\",status=\"200\"}": 6.0,
+      "group17_http_requests_total{path=\"/temperature/out-of-range\",status=\"200\"}": 1.0,
+      "group17_http_requests_total{path=\"/temperature\",status=\"422\"}": 2.0
+    },
+    {
+      "group17_http_requests_total{path=\"/temperature\",status=\"200\"}": 6.0,
+      "group17_http_requests_total{path=\"/temperature/out-of-range\",status=\"200\"}": 1.0,
+      "group17_http_requests_total{path=\"/temperature\",status=\"422\"}": 2.0
+    },
+    {
+      "group17_http_requests_total{path=\"/temperature\",status=\"200\"}": 6.0,
+      "group17_http_requests_total{path=\"/temperature/out-of-range\",status=\"200\"}": 1.0,
+      "group17_http_requests_total{path=\"/temperature\",status=\"422\"}": 2.0
+    },
+    {
+      "group17_http_requests_total{path=\"/temperature\",status=\"200\"}": 6.0,
+      "group17_http_requests_total{path=\"/temperature/out-of-range\",status=\"200\"}": 1.0,
+      "group17_http_requests_total{path=\"/temperature\",status=\"422\"}": 2.0
+    },
+    {
+      "group17_http_requests_total{path=\"/temperature\",status=\"200\"}": 6.0,
+      "group17_http_requests_total{path=\"/temperature/out-of-range\",status=\"200\"}": 1.0,
+      "group17_http_requests_total{path=\"/temperature\",status=\"422\"}": 2.0
+    }
+  ]
+}

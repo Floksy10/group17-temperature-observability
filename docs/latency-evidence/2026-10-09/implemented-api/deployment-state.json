@@ -1,0 +1,40 @@
+{
+  "old_image": "sha256:e8219043523a92f6cee2e03de447e5996690790d5d64e0509dd231831e2d9452",
+  "old_container": "8690ce79490b0b69f4d4c23644e53877c8abf7fd98a0ea4824070e0821e8ffb7",
+  "old_command": [
+    "uvicorn",
+    "app:app",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "3003",
+    "--workers",
+    "4",
+    "--no-access-log"
+  ],
+  "commit": "ebb3247b542be519f47b1d82f0186afd08634e39",
+  "rollback_tag": "group17/temperature-api:rollback-before-optimized-20261009",
+  "workers": 2,
+  "cache_per_worker": 1024,
+  "started_utc_epoch": 1791571212.4532273,
+  "new_image": "sha256:ec7e6f3b4f47802122bd9a941c8912184e07e5373da7487983eda1fda76d4a07",
+  "new_container": "49caedd45e5f7e3031f8e2253e10e950ae0c491022cbb0c41c9d9b04b8373e6f",
+  "command": [
+    "uvicorn",
+    "app:app",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "3003",
+    "--workers",
+    "2",
+    "--loop",
+    "uvloop",
+    "--http",
+    "httptools",
+    "--no-access-log"
+  ],
+  "created": "2026-10-09T18:40:31.123749665Z",
+  "healthy": true,
+  "completed_utc_epoch": 1791571236.771769
+}

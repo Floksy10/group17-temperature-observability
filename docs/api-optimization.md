@@ -52,6 +52,34 @@ A source-measurement-to-send calculation returned negative values for all 500 re
 
 ## Deployment and remaining target
 
-The prepared rollout recreates only the API service, after retaining the prior image and environment for rollback. Consumers, database and notifiers continue running. Post-rollout verification checks live response consistency, errors, aggregate metrics and notification backlog.
+**Deployed at 20:40:31 CEST on 9 October 2026** from source commit
+`ebb3247b542be519f47b1d82f0186afd08634e39`. Only the API service was recreated.
+The consumers, database and notifiers retained their running containers.
+The previous image and a private environment backup are retained on the group
+VM for rollback.
+
+The live image is
+`sha256:ec7e6f3b4f47802122bd9a941c8912184e07e5373da7487983eda1fda76d4a07`.
+The deployed application hash matched the checked-in source. Live checks
+confirmed exact real-history responses, unchanged 422 errors, healthy database
+access and six consistent aggregate metric snapshots across fresh connections.
+
+A subsequent **public API burst test from client2** sent 100 HTTP requests/second
+for 30 seconds, maximum 50 concurrent requests, using the same real 100-history
+subset and 1,600 excluded warm-up requests:
+
+- 3,000 measured responses, all correct, zero errors; achieved 99.98 requests/second.
+- Mean response-header time **9.36 ms**, median **8.78 ms**, p95 **17.05 ms**,
+  maximum **39.35 ms**.
+- **15.13%** at or below 5 ms, **62.33%** at or below 10 ms,
+  **99.43%** at or below 25 ms; all at or below 50 ms.
+- Final snapshots: zero pending readings, zero unsent notifications and
+  `/health` returned `{"status":"ok"}`.
+
+No fresh official HTTP histogram samples were available in the final two-minute
+query. The public test above is our own measurement and does not populate the
+course generator's histogram. Deployment and verification evidence are saved
+beside the benchmark evidence, including
+[the live test summary](latency-evidence/2026-10-09/implemented-api/deployed-public-burst100.summary.json).
 
 The **5 ms burst target remains unmet** in the implementation benchmarks. The measured improvement does not justify promising that most official course requests will meet it. Earlier evenly spaced requests demonstrated that the machine can meet 5 ms for most requests under that different pattern.

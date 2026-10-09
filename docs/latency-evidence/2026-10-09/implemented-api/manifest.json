@@ -486,15 +486,30 @@
   "resource_monitor_limitation": "Stopped on a database inspection exceeding the four-second timeout; samples are incomplete.",
   "candidate_memory_mib_after_warm650": 233.1,
   "files": {
+    "deployed-course-activity.json": "ffc54bebe8c4b67714bab6c0b5e6dd015cdb134ef69e1f4d279e19e3983326d8",
     "course-start.json": "fe81b6a70cea41d1447aa22288d8b5f96f1bd25758da2b2dec351a6b82658dc9",
     "implemented-w2-r1.metrics.txt": "541cd365b10dfbf2de07ff5ffea807d6327ff51be244d0f4e3c6acce95d11524",
     "resources.jsonl.gz": "542dd072bde2f088ce8c2e443cbe22fa7a51c1031d1b6b2b6bafd5af3db720eb",
     "implemented-w4-r1.metrics.txt": "3fdf0a696931b255c929dc416245dfa86abfca2b44960ae047dac2fcb6406ad7",
     "implemented-w2-cache512-history650.metrics.txt": "995578c573b3c8a83a8b302bfd32fccba862c211ce8bc46bf6d83452d413d71b",
     "implemented-w2-cache1024-history650.metrics.txt": "1f9ff8742c5edaa42994a27bb7b90319657e964a2e22437a1d97e0971b5615da",
+    "deployed-public-burst100.summary.json": "d9a25a7911fddc83074e31e1e694e7973de5149b1e8671482976caa9f38508e7",
     "implemented-request-traces.tar.gz": "1a1a3902db20b1cea84c0bec5f6a49a08caa0a73c922c078548561d13319d2f9",
+    "deployed-verification.json": "b249b3edc17ad3bebc3ec58173880078b4285c7284797c451ed16c420d0281d0",
     "implemented-w4-r2.metrics.txt": "90ba61b2f03b84e93d02ff5bdcaf98d13cf8dc3203c5598462e8e2180a7e337f",
     "implemented-w2-r2.metrics.txt": "441569424f7a0d7ff2228685714ee4cf72c8498200baaeb89aa24bf9db02cef3",
+    "deployment-state.json": "d055d22b100ef8555395f1a3cd71edd32105c52f0b1996977461c378d8f631d5",
+    "deployed-public-burst100.jsonl.gz": "2ad653689f4d955854b57a871b0ec7687bc44cd2433653b3ad7ee2c28849b7b5",
     "summaries.json": "6815172cf25803143c33380a1e7012158b2fe946fb64f0e59801f1c6f3f9c2cc"
+  },
+  "post_deployment": {
+    "measured": 3000,
+    "valid": 3000,
+    "errors": 0,
+    "warmup_valid": 1600,
+    "warmup_errors": 0,
+    "pending_readings_after_test": 0,
+    "unsent_notifications_after_test": 0,
+    "app_hash_matches_checkout": true
   }
 }
