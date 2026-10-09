@@ -1,0 +1,26 @@
+{
+  "started_utc_epoch": 1791569202.0434568,
+  "interface": "ens5",
+  "snaplen": 96,
+  "request_peers": {
+    "10.0.1.102": 42880
+  },
+  "request_arrival_to_response_departure": {
+    "count": 42880,
+    "min_ms": 0.2110004425048828,
+    "mean_ms": 73.90883725080917,
+    "p50_ms": 41.274070739746094,
+    "p95_ms": 238.69991302490234,
+    "within_5ms_fraction": 0.11187033582089552
+  },
+  "synack_departure_to_ack_arrival": {
+    "count": 400,
+    "min_ms": 0.10585784912109375,
+    "mean_ms": 0.20221710205078125,
+    "p50_ms": 0.1709461212158203,
+    "p95_ms": 0.3719329833984375,
+    "within_5ms_fraction": 1.0
+  },
+  "unmatched_requests": 0,
+  "limitations": "NIC packet timestamps; server interval excludes client transport and scheduling. Handshake interval includes network plus remote ACK processing; minimum is a practical path reference, not an application RTT."
+}

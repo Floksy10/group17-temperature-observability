@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-09",
+  "host": "client2",
+  "method": "Existing credentials; isolated group.id; explicit partition assignment; auto commits, auto offset storage and auto topic creation disabled; no publish requests.",
+  "results": [
+    {
+      "topic": "experiment",
+      "partitions": 16,
+      "read_allowed": true,
+      "record_count": 1,
+      "record_fields": [
+        "experiment",
+        "researcher",
+        "sensors",
+        "temperature_range"
+      ]
+    },
+    {
+      "topic": "experiment-document",
+      "error_code": 29,
+      "error_name": "TOPIC_AUTHORIZATION_FAILED"
+    }
+  ]
+}

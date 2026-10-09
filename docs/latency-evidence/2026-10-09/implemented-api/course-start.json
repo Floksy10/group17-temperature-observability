@@ -1,0 +1,10 @@
+{
+  "query": "sum(increase(http_load_generator_response_rtt_histogram_count{host_name=\"group17\"}[30s]))",
+  "data": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": []
+    }
+  }
+}

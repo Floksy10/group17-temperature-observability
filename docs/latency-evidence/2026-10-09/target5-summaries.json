@@ -1,0 +1,584 @@
+{
+  "target5-encoded-h11-deferred-r1.summary": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 94,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "target5-encoded-h11-deferred-r1.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791565899.120503,
+    "elapsed_seconds": 20.00519900303334,
+    "requests_per_second": 93.97557103605618,
+    "requests": 1880,
+    "valid": 1880,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 65,
+        "fraction": 0.034574468085106384
+      },
+      "10": {
+        "count": 250,
+        "fraction": 0.13297872340425532
+      },
+      "25": {
+        "count": 989,
+        "fraction": 0.5260638297872341
+      },
+      "50": {
+        "count": 1872,
+        "fraction": 0.9957446808510638
+      },
+      "100": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 1880,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 2.8107650519814342,
+        "p50": 0.2695070579648018,
+        "p95": 40.31996289268136,
+        "max": 42.81611181795597
+      },
+      "client_send_ms": {
+        "mean": 0.031008872951559248,
+        "p50": 0.022939988411962986,
+        "p95": 0.06594997830688953,
+        "max": 1.0163681581616402
+      },
+      "submission_wait_ms": {
+        "mean": 14.954074100031457,
+        "p50": 11.08516298700124,
+        "p95": 29.617897933349013,
+        "max": 43.4591849334538
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0005565778144258768,
+        "p50": 0.0003702007234096527,
+        "p95": 0.0006898771971464157,
+        "max": 0.1217210665345192
+      },
+      "total_ms": {
+        "mean": 25.571610514530317,
+        "p50": 25.19912738353014,
+        "p95": 60.9566590283066,
+        "max": 82.05189695581794
+      },
+      "ttfb_ms": {
+        "mean": 22.758971561276493,
+        "p50": 24.320920929312706,
+        "p95": 38.8060100376606,
+        "max": 66.84647616930306
+      }
+    }
+  },
+  "target5-encoded-uvloop-deferred-r1.summary": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 94,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "target5-encoded-uvloop-deferred-r1.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791566226.3220956,
+    "elapsed_seconds": 20.006943705957383,
+    "requests_per_second": 93.96737590860519,
+    "requests": 1880,
+    "valid": 1880,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 244,
+        "fraction": 0.12978723404255318
+      },
+      "10": {
+        "count": 684,
+        "fraction": 0.3638297872340426
+      },
+      "25": {
+        "count": 1580,
+        "fraction": 0.8404255319148937
+      },
+      "50": {
+        "count": 1876,
+        "fraction": 0.997872340425532
+      },
+      "100": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 1880,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.18755618812258731,
+        "p50": 0.06038101855665445,
+        "p95": 0.5822340026497841,
+        "max": 7.299699820578098
+      },
+      "client_send_ms": {
+        "mean": 0.030202912216253104,
+        "p50": 0.022420543245971203,
+        "p95": 0.06208010017871857,
+        "max": 1.4482901897281408
+      },
+      "submission_wait_ms": {
+        "mean": 12.084229682458247,
+        "p50": 9.64248098898679,
+        "p95": 24.409836856648326,
+        "max": 37.03659609891474
+      },
+      "tcp_connect_ms": {
+        "mean": 0.00045609293862226163,
+        "p50": 0.00036996789276599884,
+        "p95": 0.0006600748747587204,
+        "max": 0.027609989047050476
+      },
+      "total_ms": {
+        "mean": 15.108545567156707,
+        "p50": 13.186280615627766,
+        "p95": 31.056084902957082,
+        "max": 65.93398097902536
+      },
+      "ttfb_ms": {
+        "mean": 14.919891501553952,
+        "p50": 12.991213356144726,
+        "p95": 30.89625108987093,
+        "max": 65.73709892109036
+      }
+    }
+  },
+  "target5-fast-uvloop-deferred-r1.summary": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 94,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "target5-fast-uvloop-deferred-r1.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791566263.5188386,
+    "elapsed_seconds": 20.00661529810168,
+    "requests_per_second": 93.96891837963132,
+    "requests": 1880,
+    "valid": 1880,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 432,
+        "fraction": 0.2297872340425532
+      },
+      "10": {
+        "count": 1051,
+        "fraction": 0.5590425531914893
+      },
+      "25": {
+        "count": 1813,
+        "fraction": 0.9643617021276596
+      },
+      "50": {
+        "count": 1872,
+        "fraction": 0.9957446808510638
+      },
+      "100": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 1880,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.24739234916310995,
+        "p50": 0.0479754526168108,
+        "p95": 0.9108271915465593,
+        "max": 7.063678931444883
+      },
+      "client_send_ms": {
+        "mean": 0.027240334732576886,
+        "p50": 0.021670013666152954,
+        "p95": 0.05458993837237358,
+        "max": 0.4793531261384487
+      },
+      "submission_wait_ms": {
+        "mean": 11.368615751184445,
+        "p50": 9.34268010314554,
+        "p95": 26.291551999747753,
+        "max": 37.847451865673065
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0006124722781254255,
+        "p50": 0.00035995617508888245,
+        "p95": 0.0006200280040502548,
+        "max": 0.21250196732580662
+      },
+      "total_ms": {
+        "mean": 11.062732949838082,
+        "p50": 9.311889414675534,
+        "p95": 23.95901596173644,
+        "max": 88.62176490947604
+      },
+      "ttfb_ms": {
+        "mean": 10.814540525353415,
+        "p50": 8.99910251609981,
+        "p95": 23.680244106799364,
+        "max": 88.20307184942067
+      }
+    }
+  },
+  "target5-fast-uvloop-normal-r1.summary": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 94,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "target5-fast-uvloop-normal-r1.jsonl",
+      "client_mode": "async",
+      "defer_validation": false
+    },
+    "started_utc_epoch": 1791566303.4353564,
+    "elapsed_seconds": 20.00577696203254,
+    "requests_per_second": 93.97285611890558,
+    "requests": 1880,
+    "valid": 1880,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 43,
+        "fraction": 0.022872340425531913
+      },
+      "10": {
+        "count": 200,
+        "fraction": 0.10638297872340426
+      },
+      "25": {
+        "count": 1299,
+        "fraction": 0.6909574468085107
+      },
+      "50": {
+        "count": 1850,
+        "fraction": 0.9840425531914894
+      },
+      "100": {
+        "count": 1870,
+        "fraction": 0.9946808510638298
+      },
+      "250": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 1880,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.6721135579356725,
+        "p50": 0.03618001937866211,
+        "p95": 5.87465101853013,
+        "max": 23.364661959931254
+      },
+      "client_send_ms": {
+        "mean": 0.034683187705207064,
+        "p50": 0.024995650164783,
+        "p95": 0.07081078365445137,
+        "max": 0.9820170234888792
+      },
+      "submission_wait_ms": {
+        "mean": 16.613051637219503,
+        "p50": 13.168126461096108,
+        "p95": 31.400178093463182,
+        "max": 37.93082316406071
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0005336768152390389,
+        "p50": 0.00035995617508888245,
+        "p95": 0.0006898771971464157,
+        "max": 0.08112099021673203
+      },
+      "total_ms": {
+        "mean": 22.34217199271525,
+        "p50": 21.87900198623538,
+        "p95": 34.86422193236649,
+        "max": 140.63488505780697
+      },
+      "ttfb_ms": {
+        "mean": 21.66920506576215,
+        "p50": 21.393558476120234,
+        "p95": 33.166099805384874,
+        "max": 140.5855850316584
+      }
+    }
+  },
+  "target5-fast-uvloop-normal-r2.summary": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 94,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "target5-fast-uvloop-normal-r2.jsonl",
+      "client_mode": "async",
+      "defer_validation": false
+    },
+    "started_utc_epoch": 1791566340.037184,
+    "elapsed_seconds": 20.004515696084127,
+    "requests_per_second": 93.978781019328,
+    "requests": 1880,
+    "valid": 1880,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 82,
+        "fraction": 0.043617021276595745
+      },
+      "10": {
+        "count": 347,
+        "fraction": 0.18457446808510639
+      },
+      "25": {
+        "count": 1283,
+        "fraction": 0.6824468085106383
+      },
+      "50": {
+        "count": 1846,
+        "fraction": 0.9819148936170212
+      },
+      "100": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 1880,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.5424769208865597,
+        "p50": 0.036820536479353905,
+        "p95": 4.580450942739844,
+        "max": 19.516366068273783
+      },
+      "client_send_ms": {
+        "mean": 0.0339211927023419,
+        "p50": 0.02410996239632368,
+        "p95": 0.0686009880155325,
+        "max": 1.1015969794243574
+      },
+      "submission_wait_ms": {
+        "mean": 15.360236075023149,
+        "p50": 12.130579445511103,
+        "p95": 30.312970047816634,
+        "max": 41.44444805569947
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0004700134864988479,
+        "p50": 0.00036996789276599884,
+        "p95": 0.0006798654794692993,
+        "max": 0.1062911469489336
+      },
+      "total_ms": {
+        "mean": 22.048468705876036,
+        "p50": 20.42016200721264,
+        "p95": 43.55298285372555,
+        "max": 96.14172810688615
+      },
+      "ttfb_ms": {
+        "mean": 21.505214872106198,
+        "p50": 20.020958967506886,
+        "p95": 43.071739841252565,
+        "max": 96.06335707940161
+      }
+    }
+  },
+  "target5-fast-uvloop-warm650.summary": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 650,
+      "pattern": "burst",
+      "rate": 94,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 10000,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "target5-fast-uvloop-warm650.jsonl",
+      "client_mode": "async",
+      "defer_validation": false
+    },
+    "started_utc_epoch": 1791566398.1413474,
+    "elapsed_seconds": 20.005518834106624,
+    "requests_per_second": 93.97406863524388,
+    "requests": 1880,
+    "valid": 1880,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 40,
+        "fraction": 0.02127659574468085
+      },
+      "10": {
+        "count": 262,
+        "fraction": 0.13936170212765958
+      },
+      "25": {
+        "count": 1326,
+        "fraction": 0.7053191489361702
+      },
+      "50": {
+        "count": 1865,
+        "fraction": 0.9920212765957447
+      },
+      "100": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 1880,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 1880,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.7004525133487868,
+        "p50": 0.0360049307346344,
+        "p95": 6.086342968046665,
+        "max": 24.492415133863688
+      },
+      "client_send_ms": {
+        "mean": 0.035107539634794946,
+        "p50": 0.025700079277157784,
+        "p95": 0.07375003769993782,
+        "max": 0.6874250248074532
+      },
+      "submission_wait_ms": {
+        "mean": 16.07010447100657,
+        "p50": 12.558200513012707,
+        "p95": 32.08133904263377,
+        "max": 36.95751493796706
+      },
+      "tcp_connect_ms": {
+        "mean": 0.00048309349098262633,
+        "p50": 0.00036996789276599884,
+        "p95": 0.0006901100277900696,
+        "max": 0.04959991201758385
+      },
+      "total_ms": {
+        "mean": 21.964460206242833,
+        "p50": 21.67360996827483,
+        "p95": 40.14175781048834,
+        "max": 69.14521497674286
+      },
+      "ttfb_ms": {
+        "mean": 21.26303441881975,
+        "p50": 20.95110947266221,
+        "p95": 38.19031408056617,
+        "max": 69.10879397764802
+      }
+    }
+  }
+}

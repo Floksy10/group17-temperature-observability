@@ -1,0 +1,33 @@
+{
+  "Id": "8690ce79490b0b69f4d4c23644e53877c8abf7fd98a0ea4824070e0821e8ffb7",
+  "Created": "2026-10-09T08:02:55.005263124Z",
+  "Image": "sha256:e8219043523a92f6cee2e03de447e5996690790d5d64e0509dd231831e2d9452",
+  "command": [
+    "uvicorn",
+    "app:app",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "3003",
+    "--workers",
+    "4",
+    "--no-access-log"
+  ],
+  "limits": {
+    "CpuQuota": 0,
+    "CpuPeriod": 0,
+    "NanoCpus": 0,
+    "Memory": 0
+  },
+  "runtime": {
+    "uvloop": false,
+    "httptools": false
+  },
+  "database_histories": {
+    "terminated": 3251,
+    "min_points": 2,
+    "median_points": 20,
+    "p95_points": 290,
+    "max_points": 380
+  }
+}

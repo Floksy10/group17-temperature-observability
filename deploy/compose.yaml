@@ -60,7 +60,11 @@ services:
       - --port
       - "3003"
       - --workers
-      - ${API_WORKERS:-4}
+      - ${API_WORKERS:-2}
+      - --loop
+      - uvloop
+      - --http
+      - httptools
       - --no-access-log
     depends_on:
       database:
@@ -69,7 +73,10 @@ services:
       DATABASE_URL: postgresql://temperature:${POSTGRES_PASSWORD}@database:5432/temperature
       PROMETHEUS_URL: http://prometheus:9090
       VM_HOURLY_COST_USD: ${VM_HOURLY_COST_USD:-0.0408}
-      API_CACHE_EXPERIMENTS: ${API_CACHE_EXPERIMENTS:-512}
+      API_CACHE_EXPERIMENTS: ${API_CACHE_EXPERIMENTS:-1024}
+      PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus
+    tmpfs:
+      - /tmp:size=16m,mode=1777
     ports:
       - "${API_PORT:-3003}:3003"
     logging:

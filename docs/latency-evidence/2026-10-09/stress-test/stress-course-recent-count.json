@@ -1,0 +1,18 @@
+{
+  "query": "sum(increase(http_load_generator_response_rtt_histogram_count{host_name=\"group17\"}[5m]))",
+  "data": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": [
+        {
+          "metric": {},
+          "value": [
+            1791569475.134,
+            "16473.1752406015"
+          ]
+        }
+      ]
+    }
+  }
+}

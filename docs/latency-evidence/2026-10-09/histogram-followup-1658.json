@@ -1,0 +1,501 @@
+{
+  "server_date": "Fri, 09 Oct 2026 16:58:04 GMT",
+  "panel": {
+    "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+    },
+    "fieldConfig": {
+      "defaults": {
+        "color": {
+          "mode": "thresholds"
+        },
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": 0
+            },
+            {
+              "color": "red",
+              "value": 80
+            }
+          ]
+        }
+      }
+    },
+    "gridPos": {
+      "h": 13,
+      "w": 12,
+      "x": 12,
+      "y": 21
+    },
+    "id": 9,
+    "options": {
+      "displayMode": "gradient",
+      "legend": {
+        "calcs": [],
+        "displayMode": "list",
+        "placement": "bottom",
+        "showLegend": false
+      },
+      "maxVizHeight": 300,
+      "minVizHeight": 10,
+      "minVizWidth": 0,
+      "namePlacement": "auto",
+      "orientation": "auto",
+      "reduceOptions": {
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": "",
+        "values": false
+      },
+      "showUnfilled": true,
+      "sizing": "auto",
+      "valueMode": "text"
+    },
+    "pluginVersion": "13.2.1",
+    "targets": [
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "editorMode": "code",
+        "expr": "sum(round(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"${__user.login}\"}[$__range]))) by (le)",
+        "format": "heatmap",
+        "instant": false,
+        "legendFormat": "{{le}}",
+        "range": true,
+        "refId": "A"
+      }
+    ],
+    "title": "Response Time Histogram",
+    "type": "bargauge"
+  },
+  "queries": {
+    "5m_buckets": {
+      "query": "sum by(le)(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"group17\"}[5m]))",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {
+                "le": "0.005"
+              },
+              "value": [
+                1791565092.244,
+                "0"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.01"
+              },
+              "value": [
+                1791565092.244,
+                "27.187540540540542"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.025"
+              },
+              "value": [
+                1791565092.244,
+                "123.85435135135135"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.05"
+              },
+              "value": [
+                1791565092.244,
+                "468.2298648648649"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.1"
+              },
+              "value": [
+                1791565092.244,
+                "5032.715837837839"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.25"
+              },
+              "value": [
+                1791565092.244,
+                "9810.674351351352"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.5"
+              },
+              "value": [
+                1791565092.244,
+                "9813.69518918919"
+              ]
+            },
+            {
+              "metric": {
+                "le": "1.0"
+              },
+              "value": [
+                1791565092.244,
+                "9813.69518918919"
+              ]
+            },
+            {
+              "metric": {
+                "le": "2.5"
+              },
+              "value": [
+                1791565092.244,
+                "9813.69518918919"
+              ]
+            },
+            {
+              "metric": {
+                "le": "5.0"
+              },
+              "value": [
+                1791565092.244,
+                "9813.69518918919"
+              ]
+            },
+            {
+              "metric": {
+                "le": "10.0"
+              },
+              "value": [
+                1791565092.244,
+                "9813.69518918919"
+              ]
+            },
+            {
+              "metric": {
+                "le": "+Inf"
+              },
+              "value": [
+                1791565092.244,
+                "9813.69518918919"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "5m_mean": {
+      "query": "sum(increase(http_load_generator_response_rtt_histogram_sum{host_name=\"group17\"}[5m])) / sum(increase(http_load_generator_response_rtt_histogram_count{host_name=\"group17\"}[5m]))",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1791565092.26,
+                "0.10308095628976005"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "1h_buckets": {
+      "query": "sum by(le)(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"group17\"}[1h]))",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {
+                "le": "0.005"
+              },
+              "value": [
+                1791565092.26,
+                "2.000526870389884"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.01"
+              },
+              "value": [
+                1791565092.26,
+                "192.05056790468723"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.025"
+              },
+              "value": [
+                1791565092.26,
+                "2260.5952162166213"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.05"
+              },
+              "value": [
+                1791565092.26,
+                "13411.531233370566"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.1"
+              },
+              "value": [
+                1791565092.26,
+                "56870.97394544075"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.25"
+              },
+              "value": [
+                1791565092.26,
+                "112707.67499685098"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.5"
+              },
+              "value": [
+                1791565092.26,
+                "114112.07477647546"
+              ]
+            },
+            {
+              "metric": {
+                "le": "1.0"
+              },
+              "value": [
+                1791565092.26,
+                "114197.11954852841"
+              ]
+            },
+            {
+              "metric": {
+                "le": "2.5"
+              },
+              "value": [
+                1791565092.26,
+                "114197.11954852841"
+              ]
+            },
+            {
+              "metric": {
+                "le": "5.0"
+              },
+              "value": [
+                1791565092.26,
+                "114197.11954852841"
+              ]
+            },
+            {
+              "metric": {
+                "le": "10.0"
+              },
+              "value": [
+                1791565092.26,
+                "114197.11954852841"
+              ]
+            },
+            {
+              "metric": {
+                "le": "+Inf"
+              },
+              "value": [
+                1791565092.26,
+                "114197.11954852841"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "1h_mean": {
+      "query": "sum(increase(http_load_generator_response_rtt_histogram_sum{host_name=\"group17\"}[1h])) / sum(increase(http_load_generator_response_rtt_histogram_count{host_name=\"group17\"}[1h]))",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1791565092.249,
+                "0.1073820583443827"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "12h_buckets": {
+      "query": "sum by(le)(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"group17\"}[12h]))",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {
+                "le": "+Inf"
+              },
+              "value": [
+                1791565092.387,
+                "1061741.9061633751"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.005"
+              },
+              "value": [
+                1791565092.387,
+                "458.0120587246935"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.01"
+              },
+              "value": [
+                1791565092.387,
+                "3220.0847795035197"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.025"
+              },
+              "value": [
+                1791565092.387,
+                "28924.761539528343"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.05"
+              },
+              "value": [
+                1791565092.387,
+                "146203.72681647184"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.1"
+              },
+              "value": [
+                1791565092.387,
+                "541568.2584215899"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.25"
+              },
+              "value": [
+                1791565092.387,
+                "1037532.3162636696"
+              ]
+            },
+            {
+              "metric": {
+                "le": "0.5"
+              },
+              "value": [
+                1791565092.387,
+                "1059930.905873925"
+              ]
+            },
+            {
+              "metric": {
+                "le": "1.0"
+              },
+              "value": [
+                1791565092.387,
+                "1061687.9033198315"
+              ]
+            },
+            {
+              "metric": {
+                "le": "10.0"
+              },
+              "value": [
+                1791565092.387,
+                "1061741.9061633751"
+              ]
+            },
+            {
+              "metric": {
+                "le": "2.5"
+              },
+              "value": [
+                1791565092.387,
+                "1061741.9061633751"
+              ]
+            },
+            {
+              "metric": {
+                "le": "5.0"
+              },
+              "value": [
+                1791565092.387,
+                "1061741.9061633751"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "12h_mean": {
+      "query": "sum(increase(http_load_generator_response_rtt_histogram_sum{host_name=\"group17\"}[12h])) / sum(increase(http_load_generator_response_rtt_histogram_count{host_name=\"group17\"}[12h]))",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1791565092.395,
+                "0.10823286922793388"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "effective_rate": {
+      "query": "http_load_generator_effective_request_rate{host_name=\"group17\"}",
+      "data": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": []
+        }
+      }
+    }
+  }
+}

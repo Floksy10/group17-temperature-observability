@@ -1,0 +1,22 @@
+{
+  "query": "up{job=\"http-load-generator\"}",
+  "data": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": [
+        {
+          "metric": {
+            "__name__": "up",
+            "instance": "http-load-generator:3002",
+            "job": "http-load-generator"
+          },
+          "value": [
+            1791566728.337,
+            "1"
+          ]
+        }
+      ]
+    }
+  }
+}

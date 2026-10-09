@@ -1,19 +1,24 @@
 """Historic temperature REST API required by the course assignment."""
 
 import os
+import json
+import math
+import re
 import time
 from bisect import bisect_left, bisect_right
 from collections import OrderedDict
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from threading import Lock
 
 from fastapi import FastAPI, HTTPException, Query, Request
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, Counter, Histogram, generate_latest, multiprocess
 from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
 from starlette.responses import HTMLResponse, Response
+from starlette.concurrency import run_in_threadpool
+from starlette.datastructures import QueryParams
 
 from costs import build_cost_overview
 
@@ -24,6 +29,9 @@ REQUESTS = Counter(
 REQUEST_DURATION = Histogram(
     "group17_http_request_seconds", "HTTP request duration", ["path"]
 )
+CACHE_LOOKUPS = Counter(
+    "group17_api_cache_lookups_total", "Historic API cache lookups", ["result"]
+)
 
 
 @dataclass(frozen=True)
@@ -31,6 +39,25 @@ class ExperimentSeries:
     timestamps: tuple[float, ...]
     points: tuple[dict, ...]
     out_of_range: tuple[dict, ...]
+    encoded_points: tuple[bytes, ...] = field(init=False, repr=False)
+    encoded_out_of_range: bytes = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        def encode(point: dict) -> bytes:
+            return json.dumps(
+                point, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+            ).encode("utf-8")
+
+        object.__setattr__(self, "encoded_points", tuple(map(encode, self.points)))
+        object.__setattr__(
+            self, "encoded_out_of_range",
+            b"[" + b",".join(map(encode, self.out_of_range)) + b"]",
+        )
+
+    def temperature_json(self, start_time: float, end_time: float) -> bytes:
+        start = bisect_left(self.timestamps, start_time)
+        end = bisect_right(self.timestamps, end_time)
+        return b"[" + b",".join(self.encoded_points[start:end]) + b"]"
 
 
 class ExperimentSeriesCache:
@@ -64,22 +91,65 @@ async def lifespan(application: FastAPI):
         pool.wait(timeout=30)
         application.state.pool = pool
         application.state.series_cache = ExperimentSeriesCache(
-            int(os.getenv("API_CACHE_EXPERIMENTS", "512"))
+            int(os.getenv("API_CACHE_EXPERIMENTS", "1024"))
         )
         yield
 
 
+class CachedResponsesMiddleware:
+    """Serve validated, immutable cache hits without routing/thread handoffs.
+
+    Every miss, unsupported method and unusual/invalid parameter delegates to
+    FastAPI. Its regular routes retain the original validation/error behavior.
+    Request metrics use the ASGI send interface rather than a streaming bridge.
+    """
+
+    number = re.compile(r"[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?\Z")
+    paths = {"/temperature", "/temperature/out-of-range"}
+
+    def __init__(self, app):
+        self.app = app
+
+    def cached_body(self, scope) -> bytes | None:
+        path = scope["path"]
+        if scope["method"] != "GET" or path not in self.paths:
+            return None
+        params = QueryParams(scope.get("query_string", b""))
+        required = ("experiment-id", "start-time", "end-time") if path == "/temperature" else ("experiment-id",)
+        if any(len(params.getlist(name)) != 1 for name in required):
+            return None
+        if path == "/temperature":
+            a, b = params["start-time"], params["end-time"]
+            if not self.number.fullmatch(a) or not self.number.fullmatch(b):
+                return None
+            start, end = float(a), float(b)
+            if not math.isfinite(start) or not math.isfinite(end) or start > end:
+                return None
+        series = scope["app"].state.series_cache.get(params["experiment-id"])
+        if series is None:
+            return None
+        CACHE_LOOKUPS.labels("hit").inc()
+        return series.temperature_json(start, end) if path == "/temperature" else series.encoded_out_of_range
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        started = time.monotonic()
+
+        async def observe_send(message):
+            if message["type"] == "http.response.start":
+                REQUESTS.labels(scope["path"], str(message["status"])).inc()
+                REQUEST_DURATION.labels(scope["path"]).observe(time.monotonic() - started)
+            await send(message)
+
+        body = self.cached_body(scope)
+        if body is not None:
+            return await Response(body, media_type="application/json")(scope, receive, observe_send)
+        await self.app(scope, receive, observe_send)
+
+
 app = FastAPI(title="Group 17 Temperature Observability", lifespan=lifespan)
-
-
-@app.middleware("http")
-async def record_request(request: Request, call_next):
-    started = time.monotonic()
-    path = request.url.path
-    response = await call_next(request)
-    REQUESTS.labels(path, str(response.status_code)).inc()
-    REQUEST_DURATION.labels(path).observe(time.monotonic() - started)
-    return response
+app.add_middleware(CachedResponsesMiddleware)
 
 
 def load_experiment_series(
@@ -123,27 +193,36 @@ def load_experiment_series(
     return series
 
 
-@app.get("/temperature")
-def temperature(
+async def get_experiment_series(request: Request, experiment_id: str) -> ExperimentSeries:
+    # Capture the object once: subsequent eviction must not turn a hit into
+    # blocking database I/O on the event loop.
+    cached = request.app.state.series_cache.get(experiment_id)
+    CACHE_LOOKUPS.labels("hit" if cached is not None else "miss").inc()
+    if cached is not None:
+        return cached
+    return await run_in_threadpool(load_experiment_series, request, experiment_id)
+
+
+@app.get("/temperature", response_model=list[dict])
+async def temperature(
     request: Request,
     experiment_id: str = Query(alias="experiment-id"),
     start_time: float = Query(alias="start-time"),
     end_time: float = Query(alias="end-time"),
-) -> list[dict]:
+) -> Response:
     if start_time > end_time:
         raise HTTPException(422, "start-time must not be after end-time")
-    series = load_experiment_series(request, experiment_id)
-    start = bisect_left(series.timestamps, start_time)
-    end = bisect_right(series.timestamps, end_time)
-    return list(series.points[start:end])
+    series = await get_experiment_series(request, experiment_id)
+    return Response(series.temperature_json(start_time, end_time), media_type="application/json")
 
 
-@app.get("/temperature/out-of-range")
-def out_of_range(
+@app.get("/temperature/out-of-range", response_model=list[dict])
+async def out_of_range(
     request: Request,
     experiment_id: str = Query(alias="experiment-id"),
-) -> list[dict]:
-    return list(load_experiment_series(request, experiment_id).out_of_range)
+) -> Response:
+    series = await get_experiment_series(request, experiment_id)
+    return Response(series.encoded_out_of_range, media_type="application/json")
 
 
 @app.get("/health")
@@ -155,7 +234,13 @@ def health(request: Request) -> dict:
 
 @app.get("/metrics")
 def metrics() -> Response:
-    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+    if os.getenv("PROMETHEUS_MULTIPROC_DIR"):
+        registry = CollectorRegistry()
+        multiprocess.MultiProcessCollector(registry)
+        content = generate_latest(registry)
+    else:
+        content = generate_latest()
+    return Response(content, media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/dashboard", response_class=HTMLResponse)

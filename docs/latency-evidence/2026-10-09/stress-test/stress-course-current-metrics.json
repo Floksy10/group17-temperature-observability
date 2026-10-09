@@ -1,0 +1,10 @@
+{
+  "query": "sum by (__name__) ({host_name=\"group17\",__name__=~\"http_load_generator.*\"})",
+  "data": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": []
+    }
+  }
+}

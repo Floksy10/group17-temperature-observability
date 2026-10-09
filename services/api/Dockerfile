@@ -6,6 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py costs.py dashboard.html costs.html ./
+COPY app.py costs.py dashboard.html costs.html start_api.sh ./
+RUN chmod +x /app/start_api.sh
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "3003", "--workers", "2", "--no-access-log"]
+ENTRYPOINT ["/app/start_api.sh"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "3003", "--workers", "2", "--loop", "uvloop", "--http", "httptools", "--no-access-log"]

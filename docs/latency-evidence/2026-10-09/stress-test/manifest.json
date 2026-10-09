@@ -1,0 +1,75 @@
+{
+  "requests": 31960,
+  "valid": 31960,
+  "errors": 0,
+  "case_count": 9,
+  "files": {
+    "stress-client-resources.jsonl.gz": "06ba310f0ebf925e58e67c3f4b3180ff5a5670dc9f51303157a8c1f83cf5a194",
+    "stress-course-recent-count.json": "c416985678e640a0569b2a8628348811283dabda6873aa14a55ed48e0bbaa737",
+    "stress-course-current-metrics.json": "88085113538ff7b5dc56ed739b7058e2339e446f46ea9b37f93b87cf8139fdc1",
+    "results.json": "d97144f49d532d0b3b389aec3638dffb3ceb5c4be5fe04acebedad9ff2bf4711",
+    "stress-request-traces.tar.gz": "cede0ff6fc014397e05766168815672765ee6a5f1bbdc337bf5cf0843cc4a5b6",
+    "stress-group-resources.jsonl.gz": "4130beefa26e3918817db83c8ef8cd53dc2a257826ff7f9ab9a548695f7012d7",
+    "stress-course-rate-range.json": "d9b63834ef00227328e3c17482606a59ebd1a11354a157d95bbb143de056d84f",
+    "stress-wire-traces.jsonl.gz": "08bb67e4a6765a9bfc744ff47b016138b35868283cbdb00a877798c88bc0249d",
+    "stress-course-activity.json": "006a11fb2759f12769a5779571a4ded260a8791bcab285c969fe9f1241ae4087",
+    "stress-wire-summary.json": "be440c962bd68f468865fb4b3ef5d91fba68fb5d42c989457ea4f90292c7d1a6"
+  },
+  "raw_records_verified": 31960,
+  "warmup_checks": [
+    {
+      "case": "stress-candidate-private-burst188.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-candidate-private-burst376.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-candidate-private-burst94.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-live-private-burst188.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-live-private-burst376.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-live-private-burst94.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-live-public-burst94.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-live-repeat-burst94.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    },
+    {
+      "case": "stress-live-steady-steady94.stdout",
+      "requests": 1600,
+      "valid": 1600,
+      "errors": 0
+    }
+  ]
+}

@@ -1,0 +1,614 @@
+{
+  "implemented-w2-cache1024-history650": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 650,
+      "pattern": "burst",
+      "rate": 100,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 10000,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "implemented-w2-cache1024-history650.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791570888.5521286,
+    "elapsed_seconds": 20.005343654891476,
+    "requests_per_second": 99.97328886229771,
+    "requests": 2000,
+    "valid": 2000,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 248,
+        "fraction": 0.124
+      },
+      "10": {
+        "count": 828,
+        "fraction": 0.414
+      },
+      "25": {
+        "count": 1932,
+        "fraction": 0.966
+      },
+      "50": {
+        "count": 1983,
+        "fraction": 0.9915
+      },
+      "100": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 2000,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.1610386132961139,
+        "p50": 0.049985479563474655,
+        "p95": 0.6543849594891071,
+        "max": 5.0857949536293745
+      },
+      "client_send_ms": {
+        "mean": 0.028964867698960006,
+        "p50": 0.022025546059012413,
+        "p95": 0.0624312087893486,
+        "max": 0.5522940773516893
+      },
+      "submission_wait_ms": {
+        "mean": 12.177115923608653,
+        "p50": 9.678302565589547,
+        "p95": 23.814325919374824,
+        "max": 65.5305259861052
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0005093873478472233,
+        "p50": 0.00037997961044311523,
+        "p95": 0.0006800983101129532,
+        "max": 0.06435997784137726
+      },
+      "total_ms": {
+        "mean": 12.502790307509713,
+        "p50": 11.37088448740542,
+        "p95": 23.01310980692506,
+        "max": 63.362821005284786
+      },
+      "ttfb_ms": {
+        "mean": 12.340793042909354,
+        "p50": 11.19859260506928,
+        "p95": 22.811577888205647,
+        "max": 63.31177079118788
+      }
+    },
+    "aggregated_cache_metrics_including_warmup": {
+      "miss": 1404.0,
+      "hit": 10596.0,
+      "historic_requests": 12000.0
+    }
+  },
+  "implemented-w2-cache512-history650": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 650,
+      "pattern": "burst",
+      "rate": 100,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 10000,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "implemented-w2-cache512-history650.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791570835.7277029,
+    "elapsed_seconds": 20.004480193834752,
+    "requests_per_second": 99.9776040477366,
+    "requests": 2000,
+    "valid": 2000,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 137,
+        "fraction": 0.0685
+      },
+      "10": {
+        "count": 508,
+        "fraction": 0.254
+      },
+      "25": {
+        "count": 1386,
+        "fraction": 0.693
+      },
+      "50": {
+        "count": 1554,
+        "fraction": 0.777
+      },
+      "100": {
+        "count": 1696,
+        "fraction": 0.848
+      },
+      "250": {
+        "count": 1991,
+        "fraction": 0.9955
+      },
+      "500": {
+        "count": 2000,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.2071293501649052,
+        "p50": 0.09059056174010038,
+        "p95": 0.6373748183250427,
+        "max": 18.675530096516013
+      },
+      "client_send_ms": {
+        "mean": 0.028005637344904244,
+        "p50": 0.022054999135434628,
+        "p95": 0.0630898866802454,
+        "max": 1.3696590904146433
+      },
+      "submission_wait_ms": {
+        "mean": 14.077366202138364,
+        "p50": 9.6650276100263,
+        "p95": 37.22017910331488,
+        "max": 70.93598414212465
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0004586069844663143,
+        "p50": 0.0004100147634744644,
+        "p95": 0.0007499475032091141,
+        "max": 0.015110010281205177
+      },
+      "total_ms": {
+        "mean": 41.69471337250434,
+        "p50": 15.80113498494029,
+        "p95": 175.51376996561885,
+        "max": 279.51611299067736
+      },
+      "ttfb_ms": {
+        "mean": 41.48659219534602,
+        "p50": 15.557987964712083,
+        "p95": 175.271927844733,
+        "max": 279.2232611682266
+      }
+    },
+    "aggregated_cache_metrics_including_warmup": {
+      "miss": 3127.0,
+      "hit": 8873.0,
+      "historic_requests": 12000.0
+    }
+  },
+  "implemented-w2-r1": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 100,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "implemented-w2-r1.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791570703.245389,
+    "elapsed_seconds": 20.0055795670487,
+    "requests_per_second": 99.97210994547797,
+    "requests": 2000,
+    "valid": 2000,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 316,
+        "fraction": 0.158
+      },
+      "10": {
+        "count": 1267,
+        "fraction": 0.6335
+      },
+      "25": {
+        "count": 1998,
+        "fraction": 0.999
+      },
+      "50": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "100": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 2000,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.18470159138087183,
+        "p50": 0.040755607187747955,
+        "p95": 0.7290348876267672,
+        "max": 4.1825189255177975
+      },
+      "client_send_ms": {
+        "mean": 0.02665120898745954,
+        "p50": 0.02125999890267849,
+        "p95": 0.05437992513179779,
+        "max": 0.7930349092930555
+      },
+      "submission_wait_ms": {
+        "mean": 11.116454467060976,
+        "p50": 9.413540945388377,
+        "p95": 25.76174889691174,
+        "max": 29.416064033284783
+      },
+      "tcp_connect_ms": {
+        "mean": 0.00039999058935791254,
+        "p50": 0.00034994445741176605,
+        "p95": 0.0006200280040502548,
+        "max": 0.009089941158890724
+      },
+      "total_ms": {
+        "mean": 9.328066893969662,
+        "p50": 8.968546986579895,
+        "p95": 16.974088037386537,
+        "max": 25.5533279851079
+      },
+      "ttfb_ms": {
+        "mean": 9.142557385843247,
+        "p50": 8.806781494058669,
+        "p95": 16.680455999448895,
+        "max": 25.514428038150072
+      }
+    },
+    "aggregated_cache_metrics_including_warmup": {
+      "miss": 312.0,
+      "hit": 3288.0,
+      "historic_requests": 3600.0
+    }
+  },
+  "implemented-w2-r2": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 100,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "implemented-w2-r2.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791570736.407917,
+    "elapsed_seconds": 20.004046170972288,
+    "requests_per_second": 99.97977323718558,
+    "requests": 2000,
+    "valid": 2000,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 295,
+        "fraction": 0.1475
+      },
+      "10": {
+        "count": 1309,
+        "fraction": 0.6545
+      },
+      "25": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "50": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "100": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 2000,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.16134109324775636,
+        "p50": 0.0409100903198123,
+        "p95": 0.6937449797987938,
+        "max": 4.586591850966215
+      },
+      "client_send_ms": {
+        "mean": 0.02901861595455557,
+        "p50": 0.021560117602348328,
+        "p95": 0.05547003820538521,
+        "max": 1.2158278841525316
+      },
+      "submission_wait_ms": {
+        "mean": 11.896844914532267,
+        "p50": 10.237901587970555,
+        "p95": 24.664110969752073,
+        "max": 38.347766967490315
+      },
+      "tcp_connect_ms": {
+        "mean": 0.0004569225711748004,
+        "p50": 0.00034994445741176605,
+        "p95": 0.000600004568696022,
+        "max": 0.04964089021086693
+      },
+      "total_ms": {
+        "mean": 9.470133025897667,
+        "p50": 8.650225587189198,
+        "p95": 17.97443605028093,
+        "max": 24.47941107675433
+      },
+      "ttfb_ms": {
+        "mean": 9.307813533465378,
+        "p50": 8.539154543541372,
+        "p95": 17.692942870780826,
+        "max": 24.438000051304698
+      }
+    },
+    "aggregated_cache_metrics_including_warmup": {
+      "miss": 287.0,
+      "hit": 3313.0,
+      "historic_requests": 3600.0
+    }
+  },
+  "implemented-w4-r1": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 100,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "implemented-w4-r1.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791570669.9224102,
+    "elapsed_seconds": 20.006594481877983,
+    "requests_per_second": 99.96703845882439,
+    "requests": 2000,
+    "valid": 2000,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 330,
+        "fraction": 0.165
+      },
+      "10": {
+        "count": 1078,
+        "fraction": 0.539
+      },
+      "25": {
+        "count": 1977,
+        "fraction": 0.9885
+      },
+      "50": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "100": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "250": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 2000,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.19743686984293163,
+        "p50": 0.04760047886520624,
+        "p95": 0.6895640399307013,
+        "max": 6.767417071387172
+      },
+      "client_send_ms": {
+        "mean": 0.029017279390245676,
+        "p50": 0.021480489522218704,
+        "p95": 0.055060023441910744,
+        "max": 1.2630489654839039
+      },
+      "submission_wait_ms": {
+        "mean": 11.264615004882216,
+        "p50": 9.536421042867005,
+        "p95": 23.178970906883478,
+        "max": 30.565452063456178
+      },
+      "tcp_connect_ms": {
+        "mean": 0.00043000269215554,
+        "p50": 0.00034994445741176605,
+        "p95": 0.0005699694156646729,
+        "max": 0.02708006650209427
+      },
+      "total_ms": {
+        "mean": 10.354738638736308,
+        "p50": 9.705196949653327,
+        "p95": 19.305923953652382,
+        "max": 47.77245200239122
+      },
+      "ttfb_ms": {
+        "mean": 10.156315388041548,
+        "p50": 9.461611043661833,
+        "p95": 19.073301926255226,
+        "max": 47.51971084624529
+      }
+    },
+    "aggregated_cache_metrics_including_warmup": {
+      "miss": 507.0,
+      "hit": 3093.0,
+      "historic_requests": 3600.0
+    }
+  },
+  "implemented-w4-r2": {
+    "configuration": {
+      "base_url": "http://10.0.1.183:13003",
+      "fixtures": "fixtures.json",
+      "experiments": 100,
+      "pattern": "burst",
+      "rate": 100,
+      "seconds": 20,
+      "requests": 100,
+      "concurrency": 50,
+      "warmup": 1600,
+      "seed": 17,
+      "new_connection": false,
+      "endpoint": "mixed",
+      "output": "implemented-w4-r2.jsonl",
+      "client_mode": "async",
+      "defer_validation": true
+    },
+    "started_utc_epoch": 1791570774.6372783,
+    "elapsed_seconds": 20.006026729010046,
+    "requests_per_second": 99.96987543258,
+    "requests": 2000,
+    "valid": 2000,
+    "errors": 0,
+    "workers_seen": [
+      "unavailable"
+    ],
+    "cache_hit_fraction": null,
+    "response_header_thresholds_ms": {
+      "5": {
+        "count": 364,
+        "fraction": 0.182
+      },
+      "10": {
+        "count": 1004,
+        "fraction": 0.502
+      },
+      "25": {
+        "count": 1818,
+        "fraction": 0.909
+      },
+      "50": {
+        "count": 1950,
+        "fraction": 0.975
+      },
+      "100": {
+        "count": 1989,
+        "fraction": 0.9945
+      },
+      "250": {
+        "count": 2000,
+        "fraction": 1.0
+      },
+      "500": {
+        "count": 2000,
+        "fraction": 1.0
+      }
+    },
+    "metrics": {
+      "body_ms": {
+        "mean": 0.2251463201828301,
+        "p50": 0.062390463426709175,
+        "p95": 0.7531649898737669,
+        "max": 13.815074926242232
+      },
+      "client_send_ms": {
+        "mean": 0.027037384803406894,
+        "p50": 0.021600048057734966,
+        "p95": 0.054270029067993164,
+        "max": 0.598324928432703
+      },
+      "submission_wait_ms": {
+        "mean": 12.587908663204871,
+        "p50": 9.716992382891476,
+        "p95": 32.247492810711265,
+        "max": 50.70803198032081
+      },
+      "tcp_connect_ms": {
+        "mean": 0.000414422363974154,
+        "p50": 0.00035995617508888245,
+        "p95": 0.0006298068910837173,
+        "max": 0.022900057956576347
+      },
+      "total_ms": {
+        "mean": 13.930789771256968,
+        "p50": 10.148305562324822,
+        "p95": 33.818264957517385,
+        "max": 178.68747003376484
+      },
+      "ttfb_ms": {
+        "mean": 13.704662650940008,
+        "p50": 9.956678957678378,
+        "p95": 32.927469816058874,
+        "max": 178.62590006552637
+      }
+    },
+    "aggregated_cache_metrics_including_warmup": {
+      "miss": 484.0,
+      "hit": 3116.0,
+      "historic_requests": 3600.0
+    }
+  }
+}

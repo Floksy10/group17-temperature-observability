@@ -63,6 +63,12 @@ The consumer stores each Kafka event in PostgreSQL before committing its
 offset. A separate notifier sends durable notification requests with retries.
 The REST API excludes stabilization measurements from historic results.
 
+The optimized API defaults to two workers and caches up to 1,024 completed
+histories per worker. `API_WORKERS` and `API_CACHE_EXPERIMENTS` override these
+settings. Cached responses use pre-encoded JSON, uvloop/httptools and direct
+ASGI handling; live histories still read PostgreSQL. Compose aggregates API
+metrics across workers. See [the implementation and measured results](docs/api-optimization.md).
+
 For development with the course producer image, set
 `NOTIFICATIONS_URL=http://notifications-mock:3000/api/notify` in `.env` and run
 `docker compose --profile test --env-file .env -f deploy/compose.yaml up -d --build`.
@@ -73,6 +79,11 @@ topic. The development producer's hashes were rejected by the real service,
 so the mock test alone does not prove that the real notification path works.
 
 ## Repeat the load test
+
+The notification requirement is **up to 100 concurrent experiments**, each
+sampled once per second, with notifications within ten seconds. With multiple
+sensors, each experiment cycle generates multiple sensor events. This does
+not specify a 100 HTTP requests/second limit; HTTP query load is tested separately.
 
 On the group VM, with the development topic and mock receiver selected in
 `.env`, create 100 simultaneous experiments with two sensors sampled once per

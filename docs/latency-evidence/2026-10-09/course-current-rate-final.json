@@ -1,0 +1,10 @@
+{
+  "query": "http_load_generator_effective_request_rate{host_name=\"group17\"}",
+  "data": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": []
+    }
+  }
+}

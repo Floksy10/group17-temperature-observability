@@ -1,0 +1,188 @@
+{
+  "date": "2026-10-09",
+  "units": "milliseconds",
+  "measured_requests": 19740,
+  "measured_errors": 0,
+  "excluded_early_timing_cases": [
+    "baseline4-burst-94-warm",
+    "baseline4-burst94",
+    "baseline4-steady-94-warm",
+    "smoke"
+  ],
+  "trace_checks": {
+    "aio-async-asgi2-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "fb79363de7a390a5ad83c099c5e5e3e620476a5c1e8601b5755e144848969bd0"
+    },
+    "aio-async-asgi4-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "160ced0c912fdfa100141ebe4d2d77e957087cd2cec10e91790f329164bb0635"
+    },
+    "aio-async-asgi4-burst94-r2": {
+      "requests": 940,
+      "raw_sha256": "d594d3bd978482e8a8449f51c90376e497e01ddbcdba9eb74066c201c38a95c5"
+    },
+    "aio-async-asgi4-cold650": {
+      "requests": 940,
+      "raw_sha256": "352480099e14b8ced7c32da79162cb2fd5bbfb67c4ce146350a03468ab164972"
+    },
+    "aio-async-asgi4-warm650-cache1024": {
+      "requests": 940,
+      "raw_sha256": "1c3e9a3d27da45b3898d886bd775c872a88b532ef17bf7a3e4a2bd28829b9197"
+    },
+    "aio-async-asgi4-warm650-cache512": {
+      "requests": 940,
+      "raw_sha256": "32d5e4113cc815922cf5c539ec8d5dc412a695f01e7b4f5f518b4ff587f954ae"
+    },
+    "aio-baseline2-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "e3e6e0757f204c48e7dae47a3d83fb36262815f53801c09d7b08980a21d04f6e"
+    },
+    "aio-baseline4-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "021a707e0a9dbf2599d082d668f292457a4506bc73678617eafcbba78d7a8b9e"
+    },
+    "aio-baseline4-burst94-r2": {
+      "requests": 940,
+      "raw_sha256": "1aa13c47b8bf7a51d3683e0cbbbb8cb0dfb5fa94116a4d7e9d362879c9181eb2"
+    },
+    "asgi4-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "9284cd60fd584bffc665dc97ccbc0d3b1d703a49005d5e2e97c7848f289297ea"
+    },
+    "async-asgi4-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "204fae3407dac57e50744c007312bfef1a40505969b2c212e1d779b38ef9ab35"
+    },
+    "async-asgi4-burst94-r2": {
+      "requests": 940,
+      "raw_sha256": "7e68562ddb3118b7b97b3c49841e024cba6587ca5d5cba6ba92254693dcfeca8"
+    },
+    "async4-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "7d6469629fb5d805fab90275417538265a372f65b1de664de5eacb24234517b5"
+    },
+    "async4-burst94-r2": {
+      "requests": 940,
+      "raw_sha256": "12dbe163a62d67b2a283902fa02f84fb8b72b433e8b87335d5368a01c3d131a2"
+    },
+    "baseline2-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "93209d770a76a5e85ca8e2d55a04010254fda8917e164586cd45d3df1cf2a9a9"
+    },
+    "baseline4-burst94-r2": {
+      "requests": 940,
+      "raw_sha256": "f172d8b8a2ff15459736d55dea2ab55597022bcac948b09bca42d2d33b486411"
+    },
+    "baseline4-cold650": {
+      "requests": 940,
+      "raw_sha256": "e3ce69d25e13aebfa0e9f7172f11604f233e57e002512c8f91f2580f62d9c5d7"
+    },
+    "corrected4-burst94": {
+      "requests": 940,
+      "raw_sha256": "93d9f0148fb3b1731e2acdbc1538e634e6965e5472a34ca3ad4f885f960ec89a"
+    },
+    "corrected4-steady94": {
+      "requests": 940,
+      "raw_sha256": "52e1c545aefa9af48dcd53f12bdd662c1a27ecc9dbb3e99881a346e418e2149e"
+    },
+    "direct4-burst94-r1": {
+      "requests": 940,
+      "raw_sha256": "e76702845528bb3acd0ed5f89e71f172691f537e98e99e16228818c54a7720fc"
+    },
+    "live4-burst94": {
+      "requests": 940,
+      "raw_sha256": "2d8bcf6f2b1b937699e6199af3ff1c01b3a681ac9396fe9691be6a0f83bcf024"
+    }
+  },
+  "warmups": {
+    "aio-async-asgi4-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "async4-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "baseline2-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "aio-baseline4-burst94-r2": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "async-asgi4-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "aio-async-asgi2-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "corrected4-burst94": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "asgi4-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "aio-async-asgi4-warm650-cache512": {
+      "requests": 10000,
+      "errors": 0
+    },
+    "aio-baseline2-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "async4-burst94-r2": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "live4-burst94": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "aio-async-asgi4-burst94-r2": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "direct4-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "aio-baseline4-burst94-r1": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "aio-async-asgi4-warm650-cache1024": {
+      "requests": 10000,
+      "errors": 0
+    },
+    "baseline4-burst94-r2": {
+      "requests": 1600,
+      "errors": 0
+    },
+    "async-asgi4-burst94-r2": {
+      "requests": 1600,
+      "errors": 0
+    }
+  },
+  "fixtures_sha256": "2feef6f0d08de2b87d938609ff80310cfd63c6ab995bd74fe1b6817b4c2060cf",
+  "cleanup": {
+    "profile_container_removed": true,
+    "production_container_id_unchanged": "8690ce79490b0b69f4d4c23644e53877c8abf7fd98a0ea4824070e0821e8ffb7",
+    "production_health": {
+      "status": "ok"
+    },
+    "remaining_database_client_backends": 44
+  },
+  "observed_connection_counts_before_cleanup": {
+    "max_connections": 100,
+    "profile_idle": 48,
+    "production_api_idle": 38,
+    "client_backends_including_inspection": 96
+  },
+  "profile_memory_mib_after_cache1024": 336.5
+}

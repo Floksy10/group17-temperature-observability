@@ -1,0 +1,1353 @@
+{
+  "stress-candidate-private-burst188": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:13003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 188,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-candidate-private-burst188.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569335.2903695,
+      "elapsed_seconds": 20.008210540981963,
+      "requests_per_second": 187.9228525858698,
+      "requests": 3760,
+      "valid": 3760,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 155,
+          "fraction": 0.041223404255319146
+        },
+        "10": {
+          "count": 613,
+          "fraction": 0.163031914893617
+        },
+        "25": {
+          "count": 2035,
+          "fraction": 0.5412234042553191
+        },
+        "50": {
+          "count": 2976,
+          "fraction": 0.7914893617021277
+        },
+        "100": {
+          "count": 3556,
+          "fraction": 0.9457446808510638
+        },
+        "250": {
+          "count": 3760,
+          "fraction": 1.0
+        },
+        "500": {
+          "count": 3760,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 0.4227033974800972,
+          "p50": 0.07134547922760248,
+          "p95": 0.9053458925336599,
+          "max": 102.48899296857417
+        },
+        "client_send_ms": {
+          "mean": 0.031581878206355773,
+          "p50": 0.023250002413988113,
+          "p95": 0.0673709437251091,
+          "max": 2.093294868245721
+        },
+        "submission_wait_ms": {
+          "mean": 58.909878250771264,
+          "p50": 48.591240076348186,
+          "p95": 136.51790912263095,
+          "max": 179.99332095496356
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0004469381120214437,
+          "p50": 0.0003702007234096527,
+          "p95": 0.0006300397217273712,
+          "max": 0.06759003736078739
+        },
+        "total_ms": {
+          "mean": 34.01585761135682,
+          "p50": 23.59608595725149,
+          "p95": 104.39865500666201,
+          "max": 185.93632197007537
+        },
+        "ttfb_ms": {
+          "mean": 33.591934762327895,
+          "p50": 23.15423300024122,
+          "p95": 104.09306292422116,
+          "max": 185.82281097769737
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 30.252559971222688,
+          "p50": 29.949238578680202,
+          "p95": 42.06349206349206,
+          "max": 42.06349206349206
+        },
+        "available_memory_min_mib": 1900.58203125,
+        "steal_mean_percent": 0.7148789873044741,
+        "iowait_mean_percent": 0.3346704365267771,
+        "api_cpu_one_core_percent": {
+          "count": 19,
+          "mean": 11.73,
+          "p50": 8.52,
+          "p95": 64.65,
+          "max": 64.65
+        },
+        "database_max": {
+          "client_backends": 81,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 0,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 18.341439419963866,
+          "p50": 15.5845207253886,
+          "p95": 26.5625,
+          "max": 52.33160621761658
+        },
+        "available_memory_min_mib": 477.58203125,
+        "steal_mean_percent": 1.5547423030245593,
+        "iowait_mean_percent": 0.1553110263532383
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 3760,
+      "mean": 32.80538612223686,
+      "p50": 22.391080856323242,
+      "p95": 102.45990753173828,
+      "max": 185.58287620544434,
+      "fraction_within_5ms": 0.05558510638297872
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 67.92241379310344,
+      "max": 73.58620689655172
+    }
+  },
+  "stress-candidate-private-burst376": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:13003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 376,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-candidate-private-burst376.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569361.2596374,
+      "elapsed_seconds": 20.013490233104676,
+      "requests_per_second": 375.7465545695289,
+      "requests": 7520,
+      "valid": 7520,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 447,
+          "fraction": 0.05944148936170213
+        },
+        "10": {
+          "count": 1570,
+          "fraction": 0.20877659574468085
+        },
+        "25": {
+          "count": 4795,
+          "fraction": 0.6376329787234043
+        },
+        "50": {
+          "count": 6342,
+          "fraction": 0.8433510638297872
+        },
+        "100": {
+          "count": 7223,
+          "fraction": 0.9605053191489362
+        },
+        "250": {
+          "count": 7520,
+          "fraction": 1.0
+        },
+        "500": {
+          "count": 7520,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 0.4017034800973364,
+          "p50": 0.05666597280651331,
+          "p95": 0.9106961078941822,
+          "max": 94.67968391254544
+        },
+        "client_send_ms": {
+          "mean": 0.029530644787108883,
+          "p50": 0.022860942408442497,
+          "p95": 0.054579926654696465,
+          "max": 6.328504998236895
+        },
+        "submission_wait_ms": {
+          "mean": 100.67027412080007,
+          "p50": 78.81292898673564,
+          "p95": 216.6193500161171,
+          "max": 364.27969112992287
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0004460300725111936,
+          "p50": 0.00035995617508888245,
+          "p95": 0.0006200280040502548,
+          "max": 0.050380127504467964
+        },
+        "total_ms": {
+          "mean": 29.767463449636434,
+          "p50": 19.60756944026798,
+          "p95": 94.77740386500955,
+          "max": 245.62197597697377
+        },
+        "ttfb_ms": {
+          "mean": 29.364892363763772,
+          "p50": 19.2739674821496,
+          "p95": 93.97308900952339,
+          "max": 245.58959598653018
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 35.27761872757885,
+          "p50": 35.175879396984925,
+          "p95": 53.24232081911263,
+          "max": 53.24232081911263
+        },
+        "available_memory_min_mib": 1903.5,
+        "steal_mean_percent": 0.9821659076414503,
+        "iowait_mean_percent": 0.25608776618801327,
+        "api_cpu_one_core_percent": {
+          "count": 19,
+          "mean": 19.73,
+          "p50": 16.41,
+          "p95": 63.95,
+          "max": 63.95
+        },
+        "database_max": {
+          "client_backends": 81,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 0,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 20.65339873337041,
+          "p50": 19.221946348572352,
+          "p95": 25.263157894736842,
+          "max": 52.55102040816327
+        },
+        "available_memory_min_mib": 372.015625,
+        "steal_mean_percent": 1.5052802740974505,
+        "iowait_mean_percent": 0.38915482464430273
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 7520,
+      "mean": 28.652454880957908,
+      "p50": 18.680095672607422,
+      "p95": 93.1251049041748,
+      "max": 245.21708488464355,
+      "fraction_within_5ms": 0.08816489361702128
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 76.45689655172414,
+      "max": 77.0
+    }
+  },
+  "stress-candidate-private-burst94": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:13003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 94,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-candidate-private-burst94.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569311.1805723,
+      "elapsed_seconds": 20.00437699398026,
+      "requests_per_second": 93.97943262945564,
+      "requests": 1880,
+      "valid": 1880,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 403,
+          "fraction": 0.21436170212765956
+        },
+        "10": {
+          "count": 1010,
+          "fraction": 0.5372340425531915
+        },
+        "25": {
+          "count": 1709,
+          "fraction": 0.9090425531914894
+        },
+        "50": {
+          "count": 1860,
+          "fraction": 0.9893617021276596
+        },
+        "100": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "250": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "500": {
+          "count": 1880,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 0.23835763815750785,
+          "p50": 0.05042552947998047,
+          "p95": 0.8428760338574648,
+          "max": 12.49572797678411
+        },
+        "client_send_ms": {
+          "mean": 0.02830950803361199,
+          "p50": 0.02155057154595852,
+          "p95": 0.05512009374797344,
+          "max": 1.2170078698545694
+        },
+        "submission_wait_ms": {
+          "mean": 10.892205448211865,
+          "p50": 8.799986098892987,
+          "p95": 24.826413951814175,
+          "max": 43.518905993551016
+        },
+        "tcp_connect_ms": {
+          "mean": 0.00047202511849079996,
+          "p50": 0.00035995617508888245,
+          "p95": 0.0006600748747587204,
+          "max": 0.03167986869812012
+        },
+        "total_ms": {
+          "mean": 12.665093779573812,
+          "p50": 9.578582597896457,
+          "p95": 35.85324203595519,
+          "max": 68.44001985155046
+        },
+        "ttfb_ms": {
+          "mean": 12.42573443104196,
+          "p50": 9.32588940486312,
+          "p95": 35.61997995711863,
+          "max": 68.34296882152557
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 26.51169437436767,
+          "p50": 26.262626262626263,
+          "p95": 38.46153846153846,
+          "max": 38.46153846153846
+        },
+        "available_memory_min_mib": 1915.67578125,
+        "steal_mean_percent": 0.7411341500379028,
+        "iowait_mean_percent": 0.33727929614823265,
+        "api_cpu_one_core_percent": {
+          "count": 18,
+          "mean": 5.662222222222222,
+          "p50": 5.734999999999999,
+          "p95": 8.61,
+          "max": 8.61
+        },
+        "database_max": {
+          "client_backends": 81,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 0,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 18,
+        "cpu_busy_percent": {
+          "count": 18,
+          "mean": 13.958122319973466,
+          "p50": 12.660915549383045,
+          "p95": 19.3717277486911,
+          "max": 19.3717277486911
+        },
+        "available_memory_min_mib": 532.91796875,
+        "steal_mean_percent": 1.1232635508487132,
+        "iowait_mean_percent": 0.8705012785292204
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 1880,
+      "mean": 11.284822986481037,
+      "p50": 7.9184770584106445,
+      "p95": 35.2320671081543,
+      "max": 68.00198554992676,
+      "fraction_within_5ms": 0.30106382978723406
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 54.30172413793103,
+      "max": 56.37931034482759
+    }
+  },
+  "stress-live-private-burst188": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:3003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 188,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-live-private-burst188.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569242.6901617,
+      "elapsed_seconds": 20.007620831020176,
+      "requests_per_second": 187.92839147423408,
+      "requests": 3760,
+      "valid": 3760,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 0,
+          "fraction": 0.0
+        },
+        "10": {
+          "count": 6,
+          "fraction": 0.0015957446808510637
+        },
+        "25": {
+          "count": 128,
+          "fraction": 0.03404255319148936
+        },
+        "50": {
+          "count": 734,
+          "fraction": 0.1952127659574468
+        },
+        "100": {
+          "count": 2073,
+          "fraction": 0.5513297872340426
+        },
+        "250": {
+          "count": 3650,
+          "fraction": 0.9707446808510638
+        },
+        "500": {
+          "count": 3760,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 11.611384263527183,
+          "p50": 6.902317167259753,
+          "p95": 40.840544970706105,
+          "max": 204.74739093333483
+        },
+        "client_send_ms": {
+          "mean": 0.03184897328499071,
+          "p50": 0.024640467017889023,
+          "p95": 0.06359093822538853,
+          "max": 1.5867811162024736
+        },
+        "submission_wait_ms": {
+          "mean": 158.04967606982632,
+          "p50": 144.22875258605927,
+          "p95": 383.2833878695965,
+          "max": 621.58202403225
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0005361393089108961,
+          "p50": 0.0004300381988286972,
+          "p95": 0.0007201451808214188,
+          "max": 0.07887999527156353
+        },
+        "total_ms": {
+          "mean": 120.93202589888453,
+          "p50": 101.44683893304318,
+          "p95": 244.75727998651564,
+          "max": 460.9597211237997
+        },
+        "ttfb_ms": {
+          "mean": 109.31893947752232,
+          "p50": 90.75093001592904,
+          "p95": 223.7649830058217,
+          "max": 419.7405530139804
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 57.342098927773336,
+          "p50": 56.85279187817259,
+          "p95": 83.07086614173228,
+          "max": 83.07086614173228
+        },
+        "available_memory_min_mib": 2218.7265625,
+        "steal_mean_percent": 0.7793959975202154,
+        "iowait_mean_percent": 0.8685198540993935,
+        "database_max": {
+          "client_backends": 45,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 3,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 17.538055016723767,
+          "p50": 17.231130017452006,
+          "p95": 23.280423280423282,
+          "max": 24.736842105263158
+        },
+        "available_memory_min_mib": 490.81640625,
+        "steal_mean_percent": 1.381710112209426,
+        "iowait_mean_percent": 0.10404308487427044
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 3760,
+      "mean": 108.94673954933248,
+      "p50": 90.35086631774902,
+      "p95": 223.56104850769043,
+      "max": 419.48795318603516,
+      "fraction_within_5ms": 0.0
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 37.0,
+      "max": 37.0
+    }
+  },
+  "stress-live-private-burst376": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:3003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 376,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-live-private-burst376.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569271.300538,
+      "elapsed_seconds": 20.371256329119205,
+      "requests_per_second": 369.14758120493116,
+      "requests": 7520,
+      "valid": 7520,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 100,
+          "fraction": 0.013297872340425532
+        },
+        "10": {
+          "count": 643,
+          "fraction": 0.08550531914893617
+        },
+        "25": {
+          "count": 1529,
+          "fraction": 0.20332446808510637
+        },
+        "50": {
+          "count": 2588,
+          "fraction": 0.34414893617021275
+        },
+        "100": {
+          "count": 4019,
+          "fraction": 0.5344414893617021
+        },
+        "250": {
+          "count": 6933,
+          "fraction": 0.9219414893617022
+        },
+        "500": {
+          "count": 7515,
+          "fraction": 0.9993351063829787
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 11.884206087771863,
+          "p50": 6.5680560655891895,
+          "p95": 41.020513977855444,
+          "max": 97.48354507610202
+        },
+        "client_send_ms": {
+          "mean": 0.034113308728147454,
+          "p50": 0.025880057364702225,
+          "p95": 0.06940099410712719,
+          "max": 5.446828901767731
+        },
+        "submission_wait_ms": {
+          "mean": 396.2409430779789,
+          "p50": 384.2861904995516,
+          "p95": 830.24179097265,
+          "max": 1350.6917250342667
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0010025238264054852,
+          "p50": 0.0004498288035392761,
+          "p95": 0.0007299240678548813,
+          "max": 3.5442449152469635
+        },
+        "total_ms": {
+          "mean": 119.99714930543051,
+          "p50": 98.67029800079763,
+          "p95": 295.5003280658275,
+          "max": 548.1663059908897
+        },
+        "ttfb_ms": {
+          "mean": 108.11124278109848,
+          "p50": 87.45554101187736,
+          "p95": 275.9344580117613,
+          "max": 529.6363579109311
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 10,
+        "cpu_busy_percent": {
+          "count": 10,
+          "mean": 91.08296266934786,
+          "p50": 91.98115577889448,
+          "p95": 97.1774193548387,
+          "max": 97.1774193548387
+        },
+        "available_memory_min_mib": 2219.796875,
+        "steal_mean_percent": 0.22604504744783854,
+        "iowait_mean_percent": 0.1,
+        "database_max": {
+          "client_backends": 46,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 2,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 13,
+        "cpu_busy_percent": {
+          "count": 13,
+          "mean": 27.567336088593628,
+          "p50": 22.75132275132275,
+          "p95": 52.083333333333336,
+          "max": 52.083333333333336
+        },
+        "available_memory_min_mib": 452.53125,
+        "steal_mean_percent": 2.14138935440412,
+        "iowait_mean_percent": 1.0859392812926845
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 7520,
+      "mean": 107.74491372260641,
+      "p50": 87.18597888946533,
+      "p95": 275.67601203918457,
+      "max": 529.3018817901611,
+      "fraction_within_5ms": 0.016090425531914893
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 46.08620689655172,
+      "max": 50.48275862068965
+    }
+  },
+  "stress-live-private-burst94": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:3003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 94,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-live-private-burst94.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569215.235004,
+      "elapsed_seconds": 20.004361507948488,
+      "requests_per_second": 93.97950538201407,
+      "requests": 1880,
+      "valid": 1880,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 22,
+          "fraction": 0.011702127659574468
+        },
+        "10": {
+          "count": 175,
+          "fraction": 0.09308510638297872
+        },
+        "25": {
+          "count": 240,
+          "fraction": 0.1276595744680851
+        },
+        "50": {
+          "count": 513,
+          "fraction": 0.27287234042553193
+        },
+        "100": {
+          "count": 1229,
+          "fraction": 0.6537234042553192
+        },
+        "250": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "500": {
+          "count": 1880,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 7.898521022573906,
+          "p50": 5.008578882552683,
+          "p95": 40.39892717264593,
+          "max": 54.85403793863952
+        },
+        "client_send_ms": {
+          "mean": 0.03098604873694638,
+          "p50": 0.023089931346476078,
+          "p95": 0.06554112769663334,
+          "max": 0.6171739660203457
+        },
+        "submission_wait_ms": {
+          "mean": 52.00336768955706,
+          "p50": 19.768351456150413,
+          "p95": 142.091765999794,
+          "max": 228.77479391172528
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0005792253006725235,
+          "p50": 0.000400003045797348,
+          "p95": 0.0006901100277900696,
+          "max": 0.06971019320189953
+        },
+        "total_ms": {
+          "mean": 91.76989846634976,
+          "p50": 85.21011553239077,
+          "p95": 210.42669820599258,
+          "max": 260.9190607909113
+        },
+        "ttfb_ms": {
+          "mean": 83.86980824771912,
+          "p50": 74.80541942641139,
+          "p95": 188.71100107207894,
+          "max": 236.3549971487373
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 35.88494631084457,
+          "p50": 35.025380710659896,
+          "p95": 50.19455252918288,
+          "max": 50.19455252918288
+        },
+        "available_memory_min_mib": 2223.98828125,
+        "steal_mean_percent": 0.9246486274756626,
+        "iowait_mean_percent": 0.7381120364094823,
+        "database_max": {
+          "client_backends": 45,
+          "active_backends_including_inspection": 2,
+          "lock_waiters": 0,
+          "pending_readings": 6,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 15.639988920517204,
+          "p50": 13.917525773195877,
+          "p95": 18.134715025906736,
+          "max": 45.54973821989529
+        },
+        "available_memory_min_mib": 536.109375,
+        "steal_mean_percent": 1.4529822655006233,
+        "iowait_mean_percent": 0.12954063440648048
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 1880,
+      "mean": 83.40497866589972,
+      "p50": 74.45764541625977,
+      "p95": 188.17710876464844,
+      "max": 236.14501953125,
+      "fraction_within_5ms": 0.015957446808510637
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 36.41379310344828,
+      "max": 36.93103448275862
+    }
+  },
+  "stress-live-public-burst94": {
+    "client": {
+      "configuration": {
+        "base_url": "http://63.33.242.251:3003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 94,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-live-public-burst94.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569421.1094801,
+      "elapsed_seconds": 20.005537080112845,
+      "requests_per_second": 93.97398292640067,
+      "requests": 1880,
+      "valid": 1880,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 0,
+          "fraction": 0.0
+        },
+        "10": {
+          "count": 0,
+          "fraction": 0.0
+        },
+        "25": {
+          "count": 69,
+          "fraction": 0.036702127659574466
+        },
+        "50": {
+          "count": 310,
+          "fraction": 0.16489361702127658
+        },
+        "100": {
+          "count": 1419,
+          "fraction": 0.7547872340425532
+        },
+        "250": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "500": {
+          "count": 1880,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 8.267478333622654,
+          "p50": 5.039646523073316,
+          "p95": 40.433367947116494,
+          "max": 104.213624028489
+        },
+        "client_send_ms": {
+          "mean": 0.035420919649620006,
+          "p50": 0.024506007321178913,
+          "p95": 0.07487088441848755,
+          "max": 1.1028088629245758
+        },
+        "submission_wait_ms": {
+          "mean": 48.7019345669591,
+          "p50": 25.898862979374826,
+          "p95": 122.3076821770519,
+          "max": 186.24992901459336
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0010396678377180657,
+          "p50": 0.0004400499165058136,
+          "p95": 0.000800006091594696,
+          "max": 0.6150649860501289
+        },
+        "total_ms": {
+          "mean": 89.18172230750838,
+          "p50": 83.71708693448454,
+          "p95": 166.78706090897322,
+          "max": 228.16299903206527
+        },
+        "ttfb_ms": {
+          "mean": 80.91196511535252,
+          "p50": 75.81026793923229,
+          "p95": 159.66457594186068,
+          "max": 222.66291617415845
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 39.657246152089684,
+          "p50": 40.4040404040404,
+          "p95": 54.44015444015444,
+          "max": 54.44015444015444
+        },
+        "available_memory_min_mib": 2225.5390625,
+        "steal_mean_percent": 0.709651640427678,
+        "iowait_mean_percent": 0.0,
+        "api_cpu_one_core_percent": {
+          "count": 19,
+          "mean": 70.60368421052631,
+          "p50": 70.84,
+          "p95": 187.93,
+          "max": 187.93
+        },
+        "database_max": {
+          "client_backends": 46,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 0,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 19.834260945898013,
+          "p50": 19.032158317872604,
+          "p95": 34.196891191709845,
+          "max": 34.375
+        },
+        "available_memory_min_mib": 549.10546875,
+        "steal_mean_percent": 4.383595677214332,
+        "iowait_mean_percent": 0.12744809845537905
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 0
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 97.0,
+      "max": 97.0
+    }
+  },
+  "stress-live-repeat-burst94": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:3003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "burst",
+        "rate": 94,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-live-repeat-burst94.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569392.6192286,
+      "elapsed_seconds": 20.004677328048274,
+      "requests_per_second": 93.9780216981595,
+      "requests": 1880,
+      "valid": 1880,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 0,
+          "fraction": 0.0
+        },
+        "10": {
+          "count": 0,
+          "fraction": 0.0
+        },
+        "25": {
+          "count": 48,
+          "fraction": 0.02553191489361702
+        },
+        "50": {
+          "count": 217,
+          "fraction": 0.11542553191489362
+        },
+        "100": {
+          "count": 654,
+          "fraction": 0.3478723404255319
+        },
+        "250": {
+          "count": 1632,
+          "fraction": 0.8680851063829788
+        },
+        "500": {
+          "count": 1880,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 10.200979479246753,
+          "p50": 6.791762076318264,
+          "p95": 40.54532805457711,
+          "max": 79.29347292520106
+        },
+        "client_send_ms": {
+          "mean": 0.032553086899458725,
+          "p50": 0.02377002965658903,
+          "p95": 0.06349082104861736,
+          "max": 0.5547031760215759
+        },
+        "submission_wait_ms": {
+          "mean": 106.93021557638124,
+          "p50": 23.703507031314075,
+          "p95": 266.9962998479605,
+          "max": 381.2386919744313
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0005127094250093115,
+          "p50": 0.0004300381988286972,
+          "p95": 0.0007499475032091141,
+          "max": 0.018919818103313446
+        },
+        "total_ms": {
+          "mean": 164.9689367031084,
+          "p50": 164.90065457765013,
+          "p95": 337.96230610460043,
+          "max": 421.4465972036123
+        },
+        "ttfb_ms": {
+          "mean": 154.76587646680468,
+          "p50": 152.84958248957992,
+          "p95": 323.6339089926332,
+          "max": 416.41417308710515
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 46.61584717392759,
+          "p50": 43.93939393939394,
+          "p95": 58.0,
+          "max": 58.0
+        },
+        "available_memory_min_mib": 2211.83203125,
+        "steal_mean_percent": 0.9146998187345672,
+        "iowait_mean_percent": 0.0,
+        "api_cpu_one_core_percent": {
+          "count": 19,
+          "mean": 78.24578947368421,
+          "p50": 76.36,
+          "p95": 136.88,
+          "max": 136.88
+        },
+        "database_max": {
+          "client_backends": 46,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 0,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 17.516550918142613,
+          "p50": 16.06217616580311,
+          "p95": 21.1340206185567,
+          "max": 42.40837696335078
+        },
+        "available_memory_min_mib": 539.2421875,
+        "steal_mean_percent": 2.66698244528494,
+        "iowait_mean_percent": 0.1291521340179801
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 1880,
+      "mean": 154.31192568007936,
+      "p50": 152.45544910430908,
+      "p95": 323.36902618408203,
+      "max": 416.1369800567627,
+      "fraction_within_5ms": 0.0
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 86.99137931034483,
+      "max": 92.17241379310346
+    }
+  },
+  "stress-live-steady-steady94": {
+    "client": {
+      "configuration": {
+        "base_url": "http://10.0.1.183:3003",
+        "fixtures": "fixtures.json",
+        "experiments": 100,
+        "pattern": "steady",
+        "rate": 94,
+        "seconds": 20,
+        "requests": 100,
+        "concurrency": 50,
+        "warmup": 1600,
+        "seed": 17,
+        "new_connection": false,
+        "endpoint": "mixed",
+        "output": "stress-live-steady-steady94.jsonl",
+        "client_mode": "async",
+        "defer_validation": true
+      },
+      "started_utc_epoch": 1791569449.4810464,
+      "elapsed_seconds": 19.997408102964982,
+      "requests_per_second": 94.0121834949828,
+      "requests": 1880,
+      "valid": 1880,
+      "errors": 0,
+      "workers_seen": [
+        "unavailable"
+      ],
+      "cache_hit_fraction": null,
+      "response_header_thresholds_ms": {
+        "5": {
+          "count": 1591,
+          "fraction": 0.8462765957446808
+        },
+        "10": {
+          "count": 1853,
+          "fraction": 0.9856382978723405
+        },
+        "25": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "50": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "100": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "250": {
+          "count": 1880,
+          "fraction": 1.0
+        },
+        "500": {
+          "count": 1880,
+          "fraction": 1.0
+        }
+      },
+      "metrics": {
+        "body_ms": {
+          "mean": 0.23466281350107587,
+          "p50": 0.1678414409980178,
+          "p95": 0.6071638781577349,
+          "max": 2.4868969339877367
+        },
+        "client_send_ms": {
+          "mean": 0.06756643130582698,
+          "p50": 0.054539996199309826,
+          "p95": 0.11856993660330772,
+          "max": 3.868313040584326
+        },
+        "submission_wait_ms": {
+          "mean": 0.06082213268258629,
+          "p50": 0.04716997500509024,
+          "p95": 0.11186092160642147,
+          "max": 3.2032099552452564
+        },
+        "tcp_connect_ms": {
+          "mean": 0.0007116171392671605,
+          "p50": 0.0005101319402456284,
+          "p95": 0.0008600763976573944,
+          "max": 0.146511010825634
+        },
+        "total_ms": {
+          "mean": 4.307752502140926,
+          "p50": 3.8427619729191065,
+          "p95": 7.288472959771752,
+          "max": 21.629429887980223
+        },
+        "ttfb_ms": {
+          "mean": 4.07177839091325,
+          "p50": 3.6195109132677317,
+          "p95": 6.990501889958978,
+          "max": 21.14791702479124
+        }
+      }
+    },
+    "resources": {
+      "group": {
+        "samples": 19,
+        "cpu_busy_percent": {
+          "count": 19,
+          "mean": 27.165045294516442,
+          "p50": 28.571428571428573,
+          "p95": 32.0,
+          "max": 32.0
+        },
+        "available_memory_min_mib": 2226.01171875,
+        "steal_mean_percent": 1.9189622147029497,
+        "iowait_mean_percent": 0.0,
+        "api_cpu_one_core_percent": {
+          "count": 19,
+          "mean": 37.492105263157896,
+          "p50": 37.33,
+          "p95": 40.51,
+          "max": 40.51
+        },
+        "database_max": {
+          "client_backends": 46,
+          "active_backends_including_inspection": 1,
+          "lock_waiters": 0,
+          "pending_readings": 0,
+          "unsent_notifications": 0
+        }
+      },
+      "client": {
+        "samples": 20,
+        "cpu_busy_percent": {
+          "count": 20,
+          "mean": 18.32318683116672,
+          "p50": 16.62438603119771,
+          "p95": 24.33862433862434,
+          "max": 42.3469387755102
+        },
+        "available_memory_min_mib": 535.3515625,
+        "steal_mean_percent": 2.0512544981487295,
+        "iowait_mean_percent": 0.13048667295904792
+      }
+    },
+    "server_host_packet_interval_ms": {
+      "count": 1880,
+      "mean": 3.5253835485336626,
+      "p50": 3.06856632232666,
+      "p95": 6.402015686035156,
+      "max": 20.63298225402832,
+      "fraction_within_5ms": 0.901595744680851
+    },
+    "course_success_rate_30s_lookback": {
+      "mean": 47.7628,
+      "max": 72.0128
+    }
+  }
+}

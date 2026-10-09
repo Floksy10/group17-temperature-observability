@@ -1,0 +1,62 @@
+# HELP group17_http_request_seconds HTTP request duration
+# TYPE group17_http_request_seconds histogram
+group17_http_request_seconds_sum{path="/temperature/out-of-range"} 486.4389110391494
+group17_http_request_seconds_sum{path="/temperature"} 477.2174655154813
+group17_http_request_seconds_sum{path="/health"} 0.06841770885512233
+group17_http_request_seconds_bucket{le="0.005",path="/temperature/out-of-range"} 4446.0
+group17_http_request_seconds_bucket{le="0.01",path="/temperature/out-of-range"} 4463.0
+group17_http_request_seconds_bucket{le="0.025",path="/temperature/out-of-range"} 4481.0
+group17_http_request_seconds_bucket{le="0.05",path="/temperature/out-of-range"} 4494.0
+group17_http_request_seconds_bucket{le="0.075",path="/temperature/out-of-range"} 4523.0
+group17_http_request_seconds_bucket{le="0.1",path="/temperature/out-of-range"} 4567.0
+group17_http_request_seconds_bucket{le="0.25",path="/temperature/out-of-range"} 5078.0
+group17_http_request_seconds_bucket{le="0.5",path="/temperature/out-of-range"} 5934.0
+group17_http_request_seconds_bucket{le="0.75",path="/temperature/out-of-range"} 6066.0
+group17_http_request_seconds_bucket{le="1.0",path="/temperature/out-of-range"} 6072.0
+group17_http_request_seconds_bucket{le="2.5",path="/temperature/out-of-range"} 6074.0
+group17_http_request_seconds_bucket{le="5.0",path="/temperature/out-of-range"} 6074.0
+group17_http_request_seconds_bucket{le="7.5",path="/temperature/out-of-range"} 6074.0
+group17_http_request_seconds_bucket{le="10.0",path="/temperature/out-of-range"} 6074.0
+group17_http_request_seconds_bucket{le="+Inf",path="/temperature/out-of-range"} 6074.0
+group17_http_request_seconds_count{path="/temperature/out-of-range"} 6074.0
+group17_http_request_seconds_bucket{le="0.005",path="/temperature"} 4313.0
+group17_http_request_seconds_bucket{le="0.01",path="/temperature"} 4344.0
+group17_http_request_seconds_bucket{le="0.025",path="/temperature"} 4380.0
+group17_http_request_seconds_bucket{le="0.05",path="/temperature"} 4398.0
+group17_http_request_seconds_bucket{le="0.075",path="/temperature"} 4427.0
+group17_http_request_seconds_bucket{le="0.1",path="/temperature"} 4463.0
+group17_http_request_seconds_bucket{le="0.25",path="/temperature"} 4938.0
+group17_http_request_seconds_bucket{le="0.5",path="/temperature"} 5782.0
+group17_http_request_seconds_bucket{le="0.75",path="/temperature"} 5910.0
+group17_http_request_seconds_bucket{le="1.0",path="/temperature"} 5925.0
+group17_http_request_seconds_bucket{le="2.5",path="/temperature"} 5926.0
+group17_http_request_seconds_bucket{le="5.0",path="/temperature"} 5926.0
+group17_http_request_seconds_bucket{le="7.5",path="/temperature"} 5926.0
+group17_http_request_seconds_bucket{le="10.0",path="/temperature"} 5926.0
+group17_http_request_seconds_bucket{le="+Inf",path="/temperature"} 5926.0
+group17_http_request_seconds_count{path="/temperature"} 5926.0
+group17_http_request_seconds_bucket{le="0.005",path="/health"} 0.0
+group17_http_request_seconds_bucket{le="0.01",path="/health"} 0.0
+group17_http_request_seconds_bucket{le="0.025",path="/health"} 0.0
+group17_http_request_seconds_bucket{le="0.05",path="/health"} 0.0
+group17_http_request_seconds_bucket{le="0.075",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="0.1",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="0.25",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="0.5",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="0.75",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="1.0",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="2.5",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="5.0",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="7.5",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="10.0",path="/health"} 1.0
+group17_http_request_seconds_bucket{le="+Inf",path="/health"} 1.0
+group17_http_request_seconds_count{path="/health"} 1.0
+# HELP group17_api_cache_lookups_total Historic API cache lookups
+# TYPE group17_api_cache_lookups_total counter
+group17_api_cache_lookups_total{result="miss"} 3127.0
+group17_api_cache_lookups_total{result="hit"} 8873.0
+# HELP group17_http_requests_total HTTP requests
+# TYPE group17_http_requests_total counter
+group17_http_requests_total{path="/temperature/out-of-range",status="200"} 6074.0
+group17_http_requests_total{path="/temperature",status="200"} 5926.0
+group17_http_requests_total{path="/health",status="200"} 1.0
