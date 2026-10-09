@@ -114,3 +114,29 @@ API request test:
 python3 scripts/load_api.py --base-url http://127.0.0.1:3003 \
   --experiment-id <existing-experiment-id> --requests 2000 --concurrency 50
 ```
+
+## API response-time trial after the course demo
+
+On 9 October 2026, the course HTTP generator measured about 130 ms median and
+340 ms p95 over five minutes at approximately 42 successful requests/second.
+At lower rates near 20 requests/second, the median fell to roughly 50-70 ms;
+at 76-85 requests/second, it rose to 130-160 ms. The group VM still had
+available CPU and memory. PostgreSQL executed a representative 120-row
+experiment lookup in under 1 ms. These observations suggest testing more API
+workers, but they do not establish that workers are the only bottleneck.
+
+The Compose file on this branch prepares `API_WORKERS=4`, while preserving
+`API_CACHE_EXPERIMENTS=512`. The running demo deployment was left unchanged.
+It currently has two API workers and a 512-experiment cache per worker. The
+extra workers use more memory and database connections, so compare the same
+workload before keeping them. The database held 2,659 completed experiments;
+if the course HTTP generator queries more than 512 of them repeatedly, test a
+larger cache in a separate trial so its effect is measurable.
+
+After the demo, run the existing `scripts/load_api.py` from the same client VM,
+using the same completed experiment ID, request count, and concurrency before
+and after applying this Compose change. Warm the endpoint once before each
+run. Check successful request count, throughput, p95 latency, API memory,
+database health, and the course Grafana validation-error panels. This single-ID
+test measures worker scaling, not cache capacity. To return to the previous
+settings, put `API_WORKERS=2` in the ignored `.env` and recreate only `api`.
