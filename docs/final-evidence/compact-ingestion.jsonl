@@ -1,0 +1,1 @@
+{"implementation": "pipeline", "compact": true, "batch_size": 64, "events": 8800, "transactions": 138, "seconds": 12.561329616233706, "events_per_second": 700.5627802830099, "measurements": 2000, "notifications": {"OutOfRange": 1000, "Stabilized": 100}, "pending_readings": 0, "replay_and_rollback": "passed", "max_rss_kib": 47488}

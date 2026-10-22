@@ -1,0 +1,135 @@
+{
+  "observed_at_utc": "2026-10-22T22:21:06.682796+00:00",
+  "nodes": [
+    {
+      "name": "group17",
+      "ready": true
+    },
+    {
+      "name": "nick-client4",
+      "ready": true
+    }
+  ],
+  "pods": [
+    {
+      "name": "api-6cd5899bf8-nx7t8",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "api-6cd5899bf8-qr69g",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "consumer-6f6874f955-5c7ws",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "consumer-6f6874f955-lqtsx",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "gateway-56cd487486-frs7z",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "node-exporter-757645585-8hkzh",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "notifier-764fd864db-chnwm",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "notifier-764fd864db-p24wc",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    },
+    {
+      "name": "prometheus-5bb8fc4669-dnswz",
+      "phase": "Running",
+      "ready": true,
+      "restarts": 0
+    }
+  ],
+  "outbox": {
+    "active_pending": 0,
+    "quarantined_unsent": 3045
+  },
+  "database_tcp_roles": [
+    {
+      "usename": "group17_api_readonly",
+      "connections": 8
+    },
+    {
+      "usename": "group17_ingest",
+      "connections": 2
+    },
+    {
+      "usename": "group17_notifier",
+      "connections": 2
+    }
+  ],
+  "hba_errors": 0,
+  "admin_tcp_rejected": true,
+  "raw_source_timestamp_lag": {
+    "window_minutes": 2,
+    "delivered": 38,
+    "p95_seconds": 18.354114711284637,
+    "max_seconds": 18.693836212158203,
+    "note": "Raw source timestamps differ from official returned latency; not the course latency metric."
+  },
+  "official_notification_latency": {
+    "source": "numeric responses from official service in last two minutes of current Pod logs",
+    "count": 36,
+    "max_seconds": 0.904435396194458
+  },
+  "application_resources": "NAME                            CPU(cores)   MEMORY(bytes)   \napi-6cd5899bf8-nx7t8            12m          45Mi            \napi-6cd5899bf8-qr69g            12m          56Mi            \nconsumer-6f6874f955-5c7ws       24m          31Mi            \nconsumer-6f6874f955-lqtsx       6m           31Mi            \ngateway-56cd487486-frs7z        10m          3Mi             \nnode-exporter-757645585-8hkzh   6m           13Mi            \nnotifier-764fd864db-chnwm       8m           29Mi            \nnotifier-764fd864db-p24wc       8m           29Mi            \nprometheus-5bb8fc4669-dnswz     3m           99Mi            \n",
+  "api_health": {
+    "status": "ok"
+  },
+  "api_readiness": {
+    "status": "ok"
+  },
+  "prometheus_targets": [
+    {
+      "job": "consumer",
+      "health": "up",
+      "error": ""
+    },
+    {
+      "job": "consumer",
+      "health": "up",
+      "error": ""
+    },
+    {
+      "job": "api",
+      "health": "up",
+      "error": ""
+    },
+    {
+      "job": "api",
+      "health": "up",
+      "error": ""
+    },
+    {
+      "job": "node",
+      "health": "up",
+      "error": ""
+    }
+  ]
+}

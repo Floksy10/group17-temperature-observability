@@ -1,0 +1,7 @@
+{
+  "delivered": 20,
+  "p95_seconds": 27.346711158752445,
+  "max_seconds": 31.1152560710907,
+  "window_start": "2026-10-22T22:06:08Z",
+  "note": "Raw measurement timestamp lag, not official returned latency; includes handover and update. See official-service-latency.json and report."
+}

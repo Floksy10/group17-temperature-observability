@@ -30,7 +30,7 @@ def series(*points: tuple[float, float, bool]) -> api.ExperimentSeries:
 
 
 def async_series(values):
-    async def load(_request, _experiment_id):
+    async def load(_request, _experiment_id, *args, **kwargs):
         return values
     return load
 

@@ -1,0 +1,1014 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Namespace",
+      "metadata": {
+        "name": "temperature"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "database",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "ports": [
+          {
+            "port": 5432,
+            "targetPort": 15432
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "metadata": {
+        "name": "database",
+        "namespace": "temperature",
+        "labels": {
+          "kubernetes.io/service-name": "database",
+          "endpointslice.kubernetes.io/managed-by": "group17"
+        }
+      },
+      "addressType": "IPv4",
+      "ports": [
+        {
+          "name": null,
+          "protocol": "TCP",
+          "port": 15432
+        }
+      ],
+      "endpoints": [
+        {
+          "addresses": [
+            "10.42.0.1"
+          ],
+          "conditions": {
+            "ready": true
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "api",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 3,
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          }
+        },
+        "selector": {
+          "matchLabels": {
+            "app": "api"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "api"
+            },
+            "annotations": {
+              "prometheus.io/scrape": "true",
+              "prometheus.io/port": "3003"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "terminationGracePeriodSeconds": 45,
+            "containers": [
+              {
+                "name": "api",
+                "image": "group17/temperature-api:final-v2",
+                "imagePullPolicy": "IfNotPresent",
+                "env": [
+                  {
+                    "name": "DATABASE_URL",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "api-database",
+                        "key": "DATABASE_URL"
+                      }
+                    }
+                  },
+                  {
+                    "name": "API_DB_POOL_SIZE",
+                    "value": "4"
+                  },
+                  {
+                    "name": "API_CACHE_BYTES",
+                    "value": "33554432"
+                  },
+                  {
+                    "name": "API_CACHE_MAX_POINTS",
+                    "value": "4096"
+                  },
+                  {
+                    "name": "API_CACHE_EXPERIMENTS",
+                    "value": "1024"
+                  },
+                  {
+                    "name": "PROMETHEUS_URL",
+                    "value": "http://prometheus:9090"
+                  }
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "runtime"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ],
+                "securityContext": {
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "64Mi"
+                  },
+                  "limits": {
+                    "cpu": "1000m",
+                    "memory": "256Mi"
+                  }
+                },
+                "args": [
+                  "uvicorn",
+                  "app:app",
+                  "--host",
+                  "0.0.0.0",
+                  "--port",
+                  "3003",
+                  "--workers",
+                  "1",
+                  "--loop",
+                  "uvloop",
+                  "--http",
+                  "httptools",
+                  "--no-access-log"
+                ],
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 3003
+                  }
+                ],
+                "lifecycle": {
+                  "preStop": {
+                    "exec": {
+                      "command": [
+                        "python",
+                        "-c",
+                        "import time; time.sleep(10)"
+                      ]
+                    }
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/ready",
+                    "port": 3003
+                  },
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 2
+                },
+                "livenessProbe": {
+                  "tcpSocket": {
+                    "port": 3003
+                  },
+                  "periodSeconds": 10
+                },
+                "startupProbe": {
+                  "httpGet": {
+                    "path": "/ready",
+                    "port": 3003
+                  },
+                  "periodSeconds": 2,
+                  "failureThreshold": 30
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "medium": "Memory",
+                  "sizeLimit": "16Mi"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "consumer",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 3,
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          }
+        },
+        "selector": {
+          "matchLabels": {
+            "app": "consumer"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "consumer"
+            },
+            "annotations": {
+              "prometheus.io/scrape": "true",
+              "prometheus.io/port": "8001"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "terminationGracePeriodSeconds": 45,
+            "containers": [
+              {
+                "name": "consumer",
+                "image": "group17/temperature-consumer:final-v4",
+                "imagePullPolicy": "IfNotPresent",
+                "env": [
+                  {
+                    "name": "DATABASE_URL",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "consumer-database",
+                        "key": "DATABASE_URL"
+                      }
+                    }
+                  },
+                  {
+                    "name": "KAFKA_AUTH_DIR",
+                    "value": "/app/auth"
+                  },
+                  {
+                    "name": "KAFKA_BATCH_SIZE",
+                    "value": "64"
+                  },
+                  {
+                    "name": "KAFKA_BATCH_WAIT_SECONDS",
+                    "value": "0.02"
+                  },
+                  {
+                    "name": "METRICS_PORT",
+                    "value": "8001"
+                  }
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "runtime"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  },
+                  {
+                    "name": "auth",
+                    "mountPath": "/app/auth",
+                    "readOnly": true
+                  }
+                ],
+                "securityContext": {
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  },
+                  "limits": {
+                    "cpu": "1000m",
+                    "memory": "256Mi"
+                  }
+                },
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8001
+                  }
+                ],
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8001
+                  },
+                  "initialDelaySeconds": 5
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "medium": "Memory",
+                  "sizeLimit": "16Mi"
+                }
+              },
+              {
+                "name": "auth",
+                "secret": {
+                  "secretName": "kafka-auth",
+                  "defaultMode": 292
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "notifier",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 3,
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          }
+        },
+        "selector": {
+          "matchLabels": {
+            "app": "notifier"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "notifier"
+            },
+            "annotations": {}
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "terminationGracePeriodSeconds": 45,
+            "containers": [
+              {
+                "name": "notifier",
+                "image": "group17/temperature-notifier:final-v3",
+                "imagePullPolicy": "IfNotPresent",
+                "env": [
+                  {
+                    "name": "DATABASE_URL",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "notifier-database",
+                        "key": "DATABASE_URL"
+                      }
+                    }
+                  },
+                  {
+                    "name": "NOTIFICATIONS_TOKEN_FILE",
+                    "value": "/app/auth/token"
+                  }
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "runtime"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  },
+                  {
+                    "name": "auth",
+                    "mountPath": "/app/auth",
+                    "readOnly": true
+                  }
+                ],
+                "securityContext": {
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "64Mi"
+                  },
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "/bin/sh",
+                      "-c",
+                      "test -f /tmp/notifier-ready"
+                    ]
+                  },
+                  "periodSeconds": 2,
+                  "timeoutSeconds": 2
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "medium": "Memory",
+                  "sizeLimit": "16Mi"
+                }
+              },
+              {
+                "name": "auth",
+                "secret": {
+                  "secretName": "notification-auth",
+                  "defaultMode": 292
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "api",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "type": "NodePort",
+        "selector": {
+          "app": "gateway"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 3003,
+            "targetPort": 8080,
+            "nodePort": 3003
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "api-backend",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "selector": {
+          "app": "api"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 3003,
+            "targetPort": 3003
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "gateway-config",
+        "namespace": "temperature"
+      },
+      "data": {
+        "nginx.conf": "worker_processes 1;\npid /tmp/nginx.pid;\nerror_log /dev/stderr warn;\nevents { worker_connections 2048; }\nhttp {\n  access_log off;\n  client_body_temp_path /tmp/client_body;\n  proxy_temp_path /tmp/proxy;\n  fastcgi_temp_path /tmp/fastcgi;\n  uwsgi_temp_path /tmp/uwsgi;\n  scgi_temp_path /tmp/scgi;\n  resolver 10.43.0.10 valid=2s ipv6=off;\n  upstream temperature_api {\n    zone temperature_api 64k;\n    server api-backend.temperature.svc.cluster.local:3003 resolve max_fails=0;\n    keepalive 32;\n  }\n  server {\n    listen 8080;\n    location / {\n      proxy_pass http://temperature_api;\n      proxy_http_version 1.1;\n      proxy_set_header Connection \"\";\n      proxy_set_header Host $host;\n      proxy_connect_timeout 1s;\n      proxy_read_timeout 5s;\n      proxy_next_upstream error timeout http_502 http_503 http_504;\n      proxy_next_upstream_tries 3;\n      proxy_next_upstream_timeout 3s;\n      proxy_buffering on;\n    }\n  }\n}\n"
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "gateway",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app": "gateway"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "gateway"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "securityContext": {
+              "fsGroup": 10001
+            },
+            "containers": [
+              {
+                "name": "gateway",
+                "image": "nginx:1.28-alpine",
+                "command": [
+                  "sh",
+                  "-c",
+                  "ulimit -n 8192; exec nginx -g 'daemon off;'"
+                ],
+                "ports": [
+                  {
+                    "containerPort": 8080
+                  }
+                ],
+                "securityContext": {
+                  "runAsUser": 10001,
+                  "runAsNonRoot": true,
+                  "readOnlyRootFilesystem": true,
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "16Mi"
+                  },
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "64Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/ready",
+                    "port": 8080
+                  },
+                  "initialDelaySeconds": 3,
+                  "timeoutSeconds": 2
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config",
+                    "mountPath": "/etc/nginx/nginx.conf",
+                    "subPath": "nginx.conf",
+                    "readOnly": true
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config",
+                "configMap": {
+                  "name": "gateway-config"
+                }
+              },
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "medium": "Memory",
+                  "sizeLimit": "16Mi"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "autoscaling/v2",
+      "kind": "HorizontalPodAutoscaler",
+      "metadata": {
+        "name": "api",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "scaleTargetRef": {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "api"
+        },
+        "minReplicas": 2,
+        "maxReplicas": 4,
+        "metrics": [
+          {
+            "type": "Resource",
+            "resource": {
+              "name": "cpu",
+              "target": {
+                "type": "Utilization",
+                "averageUtilization": 75
+              }
+            }
+          }
+        ],
+        "behavior": {
+          "scaleDown": {
+            "stabilizationWindowSeconds": 180
+          },
+          "scaleUp": {
+            "stabilizationWindowSeconds": 30
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "policy/v1",
+      "kind": "PodDisruptionBudget",
+      "metadata": {
+        "name": "api",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "minAvailable": 1,
+        "selector": {
+          "matchLabels": {
+            "app": "api"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "NetworkPolicy",
+      "metadata": {
+        "name": "application-ingress",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {}
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "podSelector": {}
+              }
+            ]
+          },
+          {
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 3003
+              },
+              {
+                "protocol": "TCP",
+                "port": 8080
+              },
+              {
+                "protocol": "TCP",
+                "port": 9090
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ServiceAccount",
+      "metadata": {
+        "name": "prometheus",
+        "namespace": "temperature"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "Role",
+      "metadata": {
+        "name": "prometheus",
+        "namespace": "temperature"
+      },
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "pods"
+          ],
+          "verbs": [
+            "get",
+            "list",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "prometheus",
+        "namespace": "temperature"
+      },
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "Role",
+        "name": "prometheus"
+      },
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "prometheus",
+          "namespace": "temperature"
+        }
+      ]
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "prometheus-config",
+        "namespace": "temperature"
+      },
+      "data": {
+        "prometheus.yml": "global:\n  scrape_interval: 5s\nscrape_configs:\n  - job_name: node\n    static_configs:\n      - targets: [\"node-exporter:9100\"]\n  - job_name: application\n    kubernetes_sd_configs:\n      - role: pod\n        namespaces:\n          names: [temperature]\n    relabel_configs:\n      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]\n        action: keep\n        regex: 'true'\n      - source_labels: [__meta_kubernetes_pod_phase]\n        action: keep\n        regex: Running\n      - source_labels: [__meta_kubernetes_pod_label_app]\n        target_label: job\n      - source_labels: [__meta_kubernetes_pod_name]\n        target_label: pod\n"
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "prometheus",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 1,
+        "strategy": {
+          "type": "Recreate"
+        },
+        "selector": {
+          "matchLabels": {
+            "app": "prometheus"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "prometheus"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "prometheus",
+            "nodeSelector": {
+              "kubernetes.io/hostname": "group17"
+            },
+            "securityContext": {
+              "runAsUser": 65534,
+              "runAsGroup": 65534
+            },
+            "containers": [
+              {
+                "name": "prometheus",
+                "image": "prom/prometheus:v3.2.1",
+                "args": [
+                  "--config.file=/etc/prometheus/prometheus.yml",
+                  "--storage.tsdb.path=/prometheus",
+                  "--storage.tsdb.retention.time=7d",
+                  "--storage.tsdb.retention.size=512MB"
+                ],
+                "ports": [
+                  {
+                    "containerPort": 9090
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "96Mi"
+                  },
+                  "limits": {
+                    "memory": "384Mi",
+                    "cpu": "500m"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/-/ready",
+                    "port": 9090
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config",
+                    "mountPath": "/etc/prometheus",
+                    "readOnly": true
+                  },
+                  {
+                    "name": "data",
+                    "mountPath": "/prometheus"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config",
+                "configMap": {
+                  "name": "prometheus-config"
+                }
+              },
+              {
+                "name": "data",
+                "hostPath": {
+                  "path": "/var/lib/docker/volumes/group17-temperature-observability_prometheus_data/_data",
+                  "type": "Directory"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "prometheus",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "type": "NodePort",
+        "selector": {
+          "app": "prometheus"
+        },
+        "ports": [
+          {
+            "port": 9090,
+            "targetPort": 9090,
+            "nodePort": 3008
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "node-exporter",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app": "node-exporter"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "node-exporter"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "nodeSelector": {
+              "kubernetes.io/hostname": "group17"
+            },
+            "containers": [
+              {
+                "name": "node-exporter",
+                "image": "prom/node-exporter:v1.9.0",
+                "args": [
+                  "--path.rootfs=/host"
+                ],
+                "ports": [
+                  {
+                    "containerPort": 9100
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "16Mi"
+                  },
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "root",
+                    "mountPath": "/host",
+                    "readOnly": true,
+                    "mountPropagation": "HostToContainer"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "root",
+                "hostPath": {
+                  "path": "/",
+                  "type": "Directory"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "node-exporter",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "selector": {
+          "app": "node-exporter"
+        },
+        "ports": [
+          {
+            "port": 9100,
+            "targetPort": 9100
+          }
+        ]
+      }
+    }
+  ]
+}

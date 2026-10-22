@@ -1,0 +1,24 @@
+{
+  "run_id": "16c5f2bc",
+  "experiments": 100,
+  "sensors": 4,
+  "samples": 20,
+  "consumers_per_variant": 2,
+  "candidate_image": "final-v4",
+  "commit_mode": "sync",
+  "finished_seconds": {
+    "candidate": 33.183
+  },
+  "results": {
+    "candidate": {
+      "measurements": 2000,
+      "pending_readings": 0,
+      "notifications": 404,
+      "notification_p95_seconds": 1.2542699499999996,
+      "notification_max_seconds": 1.546509
+    }
+  },
+  "exact_data_and_outbox_match": null,
+  "all_histories_complete": true,
+  "note": "Notification latency includes local mock delivery; does not prove external-service latency."
+}

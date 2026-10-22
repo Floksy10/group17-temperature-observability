@@ -8,6 +8,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY consumer.py processor.py storage.py ./
+COPY consumer.py processor.py storage.py storage_pipeline.py batching.py ./
 
 ENTRYPOINT ["python", "/app/consumer.py"]

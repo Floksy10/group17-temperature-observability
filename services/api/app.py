@@ -5,6 +5,7 @@ import json
 import math
 import re
 import time
+import sys
 from bisect import bisect_left, bisect_right
 from collections import OrderedDict
 from contextlib import asynccontextmanager
@@ -63,8 +64,13 @@ class ExperimentSeries:
 class ExperimentSeriesCache:
     """Bounded per-worker cache for immutable, terminated experiments."""
 
-    def __init__(self, max_size: int) -> None:
+    def __init__(self, max_size: int, max_bytes: int = 32 * 1024 * 1024) -> None:
+        if max_size < 0 or max_bytes < 0:
+            raise ValueError("Cache bounds cannot be negative")
         self.max_size = max_size
+        self.max_bytes = max_bytes
+        self.bytes_used = 0
+        self._weights = {}
         self._items: OrderedDict[str, ExperimentSeries] = OrderedDict()
         self._lock = Lock()
 
@@ -76,22 +82,44 @@ class ExperimentSeriesCache:
             return series
 
     def put(self, experiment_id: str, series: ExperimentSeries) -> None:
+        # Account for referenced objects once, including Python object overhead.
+        seen = set()
+        def size(value):
+            identity = id(value)
+            if identity in seen:
+                return 0
+            seen.add(identity)
+            total = sys.getsizeof(value)
+            if isinstance(value, dict):
+                total += sum(size(k) + size(v) for k, v in value.items())
+            elif isinstance(value, (tuple, list)):
+                total += sum(size(v) for v in value)
+            return total
+        weight = size(experiment_id) + size(vars(series)) + sys.getsizeof(series) + 256
         with self._lock:
+            if experiment_id in self._items:
+                self._items.pop(experiment_id)
+                self.bytes_used -= self._weights.pop(experiment_id)
+            if not self.max_size or weight > self.max_bytes:
+                return
             self._items[experiment_id] = series
-            self._items.move_to_end(experiment_id)
-            while len(self._items) > self.max_size:
-                self._items.popitem(last=False)
+            self._weights[experiment_id] = weight
+            self.bytes_used += weight
+            while len(self._items) > self.max_size or self.bytes_used > self.max_bytes:
+                key, _ = self._items.popitem(last=False)
+                self.bytes_used -= self._weights.pop(key)
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     with ConnectionPool(
-        os.environ["DATABASE_URL"], min_size=1, max_size=15
+        os.environ["DATABASE_URL"], min_size=1, max_size=int(os.getenv("API_DB_POOL_SIZE", "4"))
     ) as pool:
         pool.wait(timeout=30)
         application.state.pool = pool
         application.state.series_cache = ExperimentSeriesCache(
-            int(os.getenv("API_CACHE_EXPERIMENTS", "1024"))
+            int(os.getenv("API_CACHE_EXPERIMENTS", "1024")),
+            int(os.getenv("API_CACHE_BYTES", str(32 * 1024 * 1024)))
         )
         yield
 
@@ -138,8 +166,9 @@ class CachedResponsesMiddleware:
 
         async def observe_send(message):
             if message["type"] == "http.response.start":
-                REQUESTS.labels(scope["path"], str(message["status"])).inc()
-                REQUEST_DURATION.labels(scope["path"]).observe(time.monotonic() - started)
+                metric_path = scope["path"] if scope["path"] in {"/temperature", "/temperature/out-of-range", "/health", "/ready", "/metrics", "/dashboard", "/costs", "/costs/data"} else "other"
+                REQUESTS.labels(metric_path, str(message["status"])).inc()
+                REQUEST_DURATION.labels(metric_path).observe(time.monotonic() - started)
             await send(message)
 
         body = self.cached_body(scope)
@@ -153,7 +182,9 @@ app.add_middleware(CachedResponsesMiddleware)
 
 
 def load_experiment_series(
-    request: Request, experiment_id: str
+    request: Request, experiment_id: str,
+    start_time: float | None = None, end_time: float | None = None,
+    outside_only: bool = False,
 ) -> ExperimentSeries:
     cached = request.app.state.series_cache.get(experiment_id)
     if cached is not None:
@@ -166,16 +197,32 @@ def load_experiment_series(
                 (experiment_id,),
             )
             experiment = cursor.fetchone()
-            cursor.execute(
-                """
-                SELECT measured_at AS timestamp, temperature, out_of_range
-                FROM measurements
-                WHERE experiment_id = %s AND during_experiment
-                ORDER BY measured_at, measurement_id
-                """,
-                (experiment_id,),
+            max_points = int(os.getenv("API_CACHE_MAX_POINTS", "4096"))
+            cacheable = bool(experiment and experiment["terminated"] and max_points > 0)
+            base = (
+                "SELECT measured_at AS timestamp, temperature, out_of_range "
+                "FROM measurements WHERE experiment_id = %s AND during_experiment"
             )
-            rows = list(cursor.fetchall())
+            ordering = " ORDER BY measured_at, measurement_id"
+            rows = None
+            if cacheable:
+                cursor.execute(base + ordering + " LIMIT %s", (experiment_id, max_points + 1))
+                rows = list(cursor.fetchall())
+                if len(rows) > max_points:
+                    cacheable = False
+                    rows = None
+            if rows is None:
+                clauses = []
+                parameters = [experiment_id]
+                if outside_only:
+                    clauses.append("out_of_range")
+                if start_time is not None and end_time is not None:
+                    clauses.append("measured_at >= %s AND measured_at <= %s")
+                    parameters.extend((start_time, end_time))
+                where = "" if not clauses else " AND " + " AND ".join(clauses)
+                cursor.execute(base + where + ordering, parameters)
+                rows = list(cursor.fetchall())
+
 
     points = tuple(
         {"timestamp": row["timestamp"], "temperature": row["temperature"]}
@@ -188,19 +235,23 @@ def load_experiment_series(
             point for point, row in zip(points, rows) if row["out_of_range"]
         ),
     )
-    if experiment is not None and experiment["terminated"]:
+    if cacheable:
         request.app.state.series_cache.put(experiment_id, series)
     return series
 
 
-async def get_experiment_series(request: Request, experiment_id: str) -> ExperimentSeries:
+async def get_experiment_series(
+    request: Request, experiment_id: str, start_time=None, end_time=None, outside_only=False
+) -> ExperimentSeries:
     # Capture the object once: subsequent eviction must not turn a hit into
     # blocking database I/O on the event loop.
     cached = request.app.state.series_cache.get(experiment_id)
     CACHE_LOOKUPS.labels("hit" if cached is not None else "miss").inc()
     if cached is not None:
         return cached
-    return await run_in_threadpool(load_experiment_series, request, experiment_id)
+    return await run_in_threadpool(
+        load_experiment_series, request, experiment_id, start_time, end_time, outside_only
+    )
 
 
 @app.get("/temperature", response_model=list[dict])
@@ -212,7 +263,7 @@ async def temperature(
 ) -> Response:
     if start_time > end_time:
         raise HTTPException(422, "start-time must not be after end-time")
-    series = await get_experiment_series(request, experiment_id)
+    series = await get_experiment_series(request, experiment_id, start_time, end_time)
     return Response(series.temperature_json(start_time, end_time), media_type="application/json")
 
 
@@ -221,8 +272,18 @@ async def out_of_range(
     request: Request,
     experiment_id: str = Query(alias="experiment-id"),
 ) -> Response:
-    series = await get_experiment_series(request, experiment_id)
+    series = await get_experiment_series(request, experiment_id, outside_only=True)
     return Response(series.encoded_out_of_range, media_type="application/json")
+
+
+@app.get("/ready")
+async def ready(request: Request) -> dict:
+    # Lifespan waits for the initial DB connection before serving requests.
+    # Do not enqueue readiness behind the same saturated pool as user queries.
+    pool = getattr(request.app.state, "pool", None)
+    if pool is None or pool.closed:
+        raise HTTPException(503, "Application is not ready")
+    return {"status": "ok"}
 
 
 @app.get("/health")

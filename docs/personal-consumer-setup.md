@@ -1,3 +1,5 @@
+> **Historical setup:** the current deployment has migrated to Kubernetes. Use [the current runbook](final-kubernetes-runbook.md); do not restart legacy personal consumers against the shared administrator database account.
+
 # Optional Kafka consumer on Ibrahim's or Yorick's VM
 
 First complete [the four-VM load-client setup](four-vm-workflow.md). Do this

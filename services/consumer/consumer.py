@@ -7,6 +7,7 @@ import logging
 import os
 import signal
 import socket
+import time
 from pathlib import Path
 
 from avro.datafile import DataFileReader
@@ -15,7 +16,8 @@ from confluent_kafka import Consumer, KafkaError, KafkaException, Message
 from prometheus_client import Counter, Histogram, start_http_server
 from psycopg_pool import ConnectionPool
 
-from storage import process_event
+from storage_pipeline import process_event
+from batching import process_batch, commit_offsets
 
 
 logging.basicConfig(
@@ -32,9 +34,18 @@ AGGREGATES = Counter(
     "group17_measurements_total", "Completed experiment measurements"
 )
 PROCESSING = Histogram(
-    "group17_event_processing_seconds", "Database processing per Kafka event"
+    "group17_batch_processing_seconds", "Database processing per Kafka batch"
 )
+COMMIT = Histogram("group17_kafka_commit_seconds", "Kafka offset commit duration")
+BATCHES = Histogram("group17_batch_messages", "Messages per database transaction", buckets=(1, 4, 8, 16, 32, 64, 128, 256))
+LAG = Histogram("group17_ingestion_lag_seconds", "Measurement timestamp to durable processing", buckets=(.05, .1, .25, .5, 1, 2, 5, 10, 30))
 ERRORS = Counter("group17_processing_errors_total", "Failed Kafka events")
+
+
+def on_commit(error, partitions):
+    if error is not None:
+        ERRORS.inc()
+        LOGGER.warning("offset_commit_failed error=%s; durable database rows will be replayed", error.code())
 
 
 def load_properties(path: Path) -> dict[str, str]:
@@ -70,6 +81,8 @@ def kafka_configuration() -> dict[str, object]:
         "client.id": os.getenv("KAFKA_CLIENT_ID", socket.gethostname()),
         "auto.offset.reset": os.getenv("KAFKA_OFFSET_RESET", "latest"),
         "enable.auto.commit": False,
+        "enable.auto.offset.store": False,
+        "on_commit": on_commit,
         "security.protocol": "SSL",
         "ssl.ca.location": str(AUTH_DIR / "ca.crt"),
         "ssl.keystore.location": str(AUTH_DIR / "kafka.keystore.pkcs12"),
@@ -92,29 +105,26 @@ def decode_records(payload: bytes | None) -> list[dict[str, object]]:
         return list(reader)
 
 
-def process_message(message: Message, pool: ConnectionPool) -> None:
+def decode_message(message):
     name = record_name(message)
-    records = decode_records(message.value())
-    with pool.connection() as connection:
-        for record in records:
-            with PROCESSING.time():
-                result = process_event(connection, name, record)
-            EVENTS.labels(name).inc()
-            if result is not None:
-                AGGREGATES.inc()
-                LOGGER.info(
-                    "measurement_aggregated experiment=%s measurement_id=%s "
-                    "temperature=%.3f out_of_range=%s during_experiment=%s "
-                    "notification=%s",
-                    result.experiment_id,
-                    result.measurement_id,
-                    result.temperature,
-                    result.out_of_range,
-                    result.during_experiment,
-                    result.notification_type,
-                )
-            elif name != "sensor_temperature_measured":
-                LOGGER.info("event=%s experiment=%s", name, record["experiment"])
+    return [(name, record) for record in decode_records(message.value())]
+
+
+def record_results(results):
+    # Log/metrics after the DB transaction commits, including on batch replay.
+    for name, record, result in results:
+        EVENTS.labels(name).inc(record.get("_record_count", 1))
+        if result is not None:
+            AGGREGATES.inc()
+            LAG.observe(max(0.0, time.time() - float(record["timestamp"])))
+            LOGGER.debug(
+                "measurement_aggregated experiment=%s measurement_id=%s "
+                "temperature=%.3f notification=%s",
+                result.experiment_id, result.measurement_id,
+                result.temperature, result.notification_type,
+            )
+        elif name != "sensor_temperature_measured":
+            LOGGER.info("event=%s experiment=%s", name, record["experiment"])
 
 
 def stop(_signum: int, _frame: object) -> None:
@@ -131,30 +141,71 @@ def main() -> None:
     with ConnectionPool(os.environ["DATABASE_URL"], min_size=1, max_size=2) as pool:
         pool.wait(timeout=30)
         consumer = Consumer(kafka_configuration())
-        consumer.subscribe([topic])
-        LOGGER.info("consumer_started topic=%s", topic)
+        commit_mode = os.getenv("KAFKA_COMMIT_MODE", "sync")
+        if commit_mode not in {"sync", "async"}:
+            raise ValueError("KAFKA_COMMIT_MODE must be sync or async")
+        durable_offsets = {}
 
-        try:
-            while RUNNING:
-                message = consumer.poll(1.0)
-                if message is None:
-                    continue
-                if message.error():
-                    if message.error().code() == KafkaError._PARTITION_EOF:
-                        continue
-                    raise KafkaException(message.error())
-
+        def revoked(client, partitions):
+            keys = {(p.topic, p.partition) for p in partitions}
+            owned = [v for k, v in durable_offsets.items() if k in keys]
+            if commit_mode == "async" and owned:
                 try:
-                    process_message(message, pool)
-                    consumer.commit(message=message, asynchronous=False)
+                    client.commit(offsets=owned, asynchronous=False)
+                except KafkaException:
+                    LOGGER.warning("rebalance_commit_failed; durable rows will be replayed")
+            for key in keys:
+                durable_offsets.pop(key, None)
+
+        consumer.subscribe([topic], on_revoke=revoked)
+        LOGGER.info("consumer_started topic=%s commit_mode=%s", topic, commit_mode)
+        try:
+            batch_size = int(os.getenv("KAFKA_BATCH_SIZE", "64"))
+            batch_wait = float(os.getenv("KAFKA_BATCH_WAIT_SECONDS", "0.02"))
+            if not 1 <= batch_size <= 256 or not 0 < batch_wait <= 0.1:
+                raise ValueError("Batch size must be 1..256; wait must be (0, .1]")
+            pending = []
+            failures = 0
+            while RUNNING:
+                if not pending:
+                    incoming = consumer.consume(batch_size, timeout=batch_wait)
+                    for message in incoming:
+                        if message.error():
+                            if message.error().code() == KafkaError._PARTITION_EOF:
+                                continue
+                            raise KafkaException(message.error())
+                        pending.append(message)
+                    if not pending:
+                        continue
+                try:
+                    with PROCESSING.time():
+                        results = process_batch(
+                            pending, pool, decode_message, process_event, compact=True
+                        )
+                    # Explicit offsets include ONLY the committed database batch.
+                    # On any failure retain this batch; never poll past failed work.
+                    offsets = commit_offsets(pending)
+                    for offset in offsets:
+                        durable_offsets[(offset.topic, offset.partition)] = offset
+                    with COMMIT.time():
+                        consumer.commit(offsets=offsets, asynchronous=(commit_mode == "async"))
+                    BATCHES.observe(len(pending))
+                    record_results(results)
+                    pending = []
+                    failures = 0
                 except Exception:
                     ERRORS.inc()
-                    LOGGER.exception(
-                        "message_processing_failed partition=%s offset=%s",
-                        message.partition(),
-                        message.offset(),
-                    )
+                    failures += 1
+                    LOGGER.exception("batch_failed retry=%s messages=%s", failures, len(pending))
+                    if failures >= 5:
+                        raise RuntimeError("Batch failed repeatedly; restart without advancing offsets")
+                    time.sleep(min(0.1 * 2 ** min(failures, 5), 2.0))
         finally:
+            if commit_mode == "async" and durable_offsets:
+                try:
+                    consumer.commit(offsets=list(durable_offsets.values()), asynchronous=False)
+                except KafkaException:
+                    LOGGER.warning("final_offset_commit_failed; durable rows will be replayed")
             consumer.close()
             LOGGER.info("consumer_stopped")
 

@@ -1,0 +1,32 @@
+{
+  "run_id": "25eb56c7",
+  "experiments": 40,
+  "sensors": 4,
+  "samples": 20,
+  "consumers_per_variant": 2,
+  "candidate_image": "final-v4",
+  "commit_mode": "sync",
+  "finished_seconds": {
+    "candidate": 27.331,
+    "baseline": 38.977
+  },
+  "results": {
+    "baseline": {
+      "measurements": 800,
+      "pending_readings": 0,
+      "notifications": 153,
+      "notification_p95_seconds": 14.964007,
+      "notification_max_seconds": 15.129575
+    },
+    "candidate": {
+      "measurements": 800,
+      "pending_readings": 0,
+      "notifications": 153,
+      "notification_p95_seconds": 0.7777354000000003,
+      "notification_max_seconds": 1.577008
+    }
+  },
+  "exact_data_and_outbox_match": true,
+  "all_histories_complete": true,
+  "note": "Notification latency includes local mock delivery; does not prove external-service latency."
+}

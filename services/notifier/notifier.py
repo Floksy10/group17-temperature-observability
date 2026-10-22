@@ -2,6 +2,7 @@
 
 import logging
 import os
+import signal
 import time
 from pathlib import Path
 
@@ -15,6 +16,8 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 LOGGER = logging.getLogger("group17-notifier")
+RUNNING = True
+READINESS_FILE = Path("/tmp/notifier-ready")
 DATABASE_URL = os.environ["DATABASE_URL"]
 NOTIFICATIONS_URL = os.getenv(
     "NOTIFICATIONS_URL", "https://notifications.cec.dlandau.nl/api/notify"
@@ -85,7 +88,7 @@ def send_next(connection: psycopg.Connection, session: requests.Session) -> bool
                 cursor.execute(
                     """
                     UPDATE notification_outbox
-                    SET sent_at = now(), attempts = attempts + 1, last_error = NULL
+                    SET sent_at = clock_timestamp(), attempts = attempts + 1, last_error = NULL
                     WHERE id = %s
                     """,
                     (notification["id"],),
@@ -101,20 +104,33 @@ def send_next(connection: psycopg.Connection, session: requests.Session) -> bool
     return True
 
 
+def stop(_signum, _frame):
+    global RUNNING
+    RUNNING = False
+
+
 def main() -> None:
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
     if not TOKEN:
         raise RuntimeError("Notification token is empty")
-    with requests.Session() as session:
-        while True:
-            try:
-                with psycopg.connect(DATABASE_URL) as connection:
-                    connection.autocommit = True
-                    while True:
-                        if not send_next(connection, session):
-                            time.sleep(0.25)
-            except psycopg.Error:
-                LOGGER.exception("database_connection_failed")
-                time.sleep(2)
+    READINESS_FILE.unlink(missing_ok=True)
+    try:
+        with requests.Session() as session:
+            while RUNNING:
+                try:
+                    with psycopg.connect(DATABASE_URL) as connection:
+                        connection.autocommit = True
+                        READINESS_FILE.write_text("ready\n")
+                        while RUNNING:
+                            if not send_next(connection, session):
+                                time.sleep(0.25)
+                except psycopg.Error:
+                    READINESS_FILE.unlink(missing_ok=True)
+                    LOGGER.exception("database_connection_failed")
+                    time.sleep(2)
+    finally:
+        READINESS_FILE.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

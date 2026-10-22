@@ -1,0 +1,98 @@
+{
+  "configuration": {
+    "base_url": "http://63.33.242.251:3003",
+    "fixtures": "/tmp/group17-fixtures.json",
+    "experiments": 100,
+    "pattern": "burst",
+    "rate": 250,
+    "seconds": 15,
+    "requests": 100,
+    "concurrency": 50,
+    "warmup": 300,
+    "seed": 17,
+    "window_points": 0,
+    "new_connection": false,
+    "endpoint": "mixed",
+    "output": "/home/ubuntu/group17-final-evidence/final-rolling.jsonl",
+    "client_mode": "async",
+    "defer_validation": true
+  },
+  "started_utc_epoch": 1792707187.564386,
+  "elapsed_seconds": 15.007309521082789,
+  "requests_per_second": 249.87823398537026,
+  "requests": 3750,
+  "valid": 3750,
+  "errors": 0,
+  "workers_seen": [
+    "unavailable"
+  ],
+  "cache_hit_fraction": null,
+  "response_header_thresholds_ms": {
+    "5": {
+      "count": 94,
+      "fraction": 0.025066666666666668
+    },
+    "10": {
+      "count": 305,
+      "fraction": 0.08133333333333333
+    },
+    "25": {
+      "count": 1582,
+      "fraction": 0.42186666666666667
+    },
+    "50": {
+      "count": 2849,
+      "fraction": 0.7597333333333334
+    },
+    "100": {
+      "count": 3354,
+      "fraction": 0.8944
+    },
+    "250": {
+      "count": 3619,
+      "fraction": 0.9650666666666666
+    },
+    "500": {
+      "count": 3650,
+      "fraction": 0.9733333333333334
+    }
+  },
+  "metrics": {
+    "body_ms": {
+      "mean": 0.07934337345262368,
+      "p50": 0.035960227251052856,
+      "p95": 0.3551747649908066,
+      "max": 1.6982010565698147
+    },
+    "client_send_ms": {
+      "mean": 0.02825791761279106,
+      "p50": 0.02343999221920967,
+      "p95": 0.05456060171127319,
+      "max": 0.5015069618821144
+    },
+    "submission_wait_ms": {
+      "mean": 144.43962920308113,
+      "p50": 75.01521846279502,
+      "p95": 353.57797099277377,
+      "max": 1763.771891593933
+    },
+    "tcp_connect_ms": {
+      "mean": 0.0004069166878859202,
+      "p50": 0.00033993273973464966,
+      "p95": 0.0005997717380523682,
+      "max": 0.04055025056004524
+    },
+    "total_ms": {
+      "mean": 64.19735437072814,
+      "p50": 28.8806171156466,
+      "p95": 146.50814607739449,
+      "max": 1457.31166517362
+    },
+    "ttfb_ms": {
+      "mean": 64.11726857262353,
+      "p50": 28.69077632203698,
+      "p95": 146.4138738811016,
+      "max": 1457.2250139899552
+    }
+  }
+}

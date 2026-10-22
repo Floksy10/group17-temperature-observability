@@ -165,6 +165,7 @@ def main():
     parser.add_argument("--concurrency", type=int, default=50)
     parser.add_argument("--warmup", type=int, default=0)
     parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--window-points", type=int, default=0)
     parser.add_argument("--new-connection", action="store_true")
     parser.add_argument("--endpoint", choices=["mixed", "temperature", "out-of-range", "health"], default="mixed")
     parser.add_argument("--output", required=True)
@@ -191,6 +192,8 @@ def main():
         params = {"experiment-id": fixture["id"]}
         if endpoint == "temperature":
             a, b = sorted([rng.randrange(len(points)), rng.randrange(len(points))])
+            if args.window_points:
+                b = min(len(points) - 1, a + args.window_points - 1)
             start = math.floor(points[a]["timestamp"] * 1000) / 1000
             end = math.ceil(points[b]["timestamp"] * 1000) / 1000
             params.update({"start-time": start, "end-time": end})
