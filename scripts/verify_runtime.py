@@ -1,5 +1,6 @@
 """Read-only post-deployment audit; never emits Kubernetes Secret contents."""
 import json
+import argparse
 import re
 import math
 import subprocess
@@ -16,6 +17,9 @@ def kube(*args):
     return json.loads(command('sudo','k3s','kubectl','-n','temperature',*args,'-o','json'))
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output',default='/tmp/group17-runtime.json',help='Snapshot path; defaults outside the Git checkout')
+    args=parser.parse_args()
     report = {'observed_at_utc': datetime.now(timezone.utc).isoformat()}
     report['nodes']=[{'name': v['metadata']['name'],'ready': any(c['type']=='Ready' and c['status']=='True' for c in v['status']['conditions'])} for v in kube('get','nodes')['items']]
     report['pods']=[{'name':p['metadata']['name'],'phase':p['status']['phase'],'ready':all(c.get('ready') for c in p['status'].get('containerStatuses',[])),'restarts':sum(c['restartCount'] for c in p['status'].get('containerStatuses',[]))} for p in kube('get','pods')['items']]
@@ -34,7 +38,7 @@ def main():
         with urllib.request.urlopen(url,timeout=10) as response:
             data=json.load(response)
         report[name]=([{'job': t['labels'].get('job'),'health':t['health'],'error':t['lastError']} for t in data['data']['activeTargets']] if name=='prometheus_targets' else data)
-    path=Path(__file__).resolve().parents[1]/'docs/final-evidence/runtime.json'
+    path=Path(args.output)
     path.write_text(json.dumps(report,indent=2))
     print(json.dumps(report,indent=2))
 
