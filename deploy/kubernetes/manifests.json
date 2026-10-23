@@ -63,7 +63,7 @@
         "namespace": "temperature"
       },
       "spec": {
-        "replicas": 2,
+        "replicas": 1,
         "revisionHistoryLimit": 3,
         "strategy": {
           "type": "RollingUpdate",
@@ -80,7 +80,8 @@
         "template": {
           "metadata": {
             "labels": {
-              "app": "api"
+              "app": "api",
+              "component": "temperature-api"
             },
             "annotations": {
               "prometheus.io/scrape": "true",
@@ -152,7 +153,7 @@
                 },
                 "resources": {
                   "requests": {
-                    "cpu": "250m",
+                    "cpu": "400m",
                     "memory": "64Mi"
                   },
                   "limits": {
@@ -224,7 +225,196 @@
                   "sizeLimit": "16Mi"
                 }
               }
+            ],
+            "nodeSelector": {
+              "kubernetes.io/hostname": "nick-client4"
+            },
+            "tolerations": [
+              {
+                "key": "role",
+                "operator": "Equal",
+                "value": "load",
+                "effect": "NoSchedule"
+              }
             ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "api-reserve",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 3,
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          }
+        },
+        "selector": {
+          "matchLabels": {
+            "app": "api-reserve"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "api-reserve",
+              "component": "temperature-api"
+            },
+            "annotations": {
+              "prometheus.io/scrape": "true",
+              "prometheus.io/port": "3003"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "terminationGracePeriodSeconds": 45,
+            "containers": [
+              {
+                "name": "api",
+                "image": "group17/temperature-api:final-v2",
+                "imagePullPolicy": "IfNotPresent",
+                "env": [
+                  {
+                    "name": "DATABASE_URL",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "api-database",
+                        "key": "DATABASE_URL"
+                      }
+                    }
+                  },
+                  {
+                    "name": "API_DB_POOL_SIZE",
+                    "value": "4"
+                  },
+                  {
+                    "name": "API_CACHE_BYTES",
+                    "value": "33554432"
+                  },
+                  {
+                    "name": "API_CACHE_MAX_POINTS",
+                    "value": "4096"
+                  },
+                  {
+                    "name": "API_CACHE_EXPERIMENTS",
+                    "value": "1024"
+                  },
+                  {
+                    "name": "PROMETHEUS_URL",
+                    "value": "http://prometheus:9090"
+                  }
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "runtime"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ],
+                "securityContext": {
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "400m",
+                    "memory": "64Mi"
+                  },
+                  "limits": {
+                    "cpu": "1000m",
+                    "memory": "256Mi"
+                  }
+                },
+                "args": [
+                  "uvicorn",
+                  "app:app",
+                  "--host",
+                  "0.0.0.0",
+                  "--port",
+                  "3003",
+                  "--workers",
+                  "1",
+                  "--loop",
+                  "uvloop",
+                  "--http",
+                  "httptools",
+                  "--no-access-log"
+                ],
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 3003
+                  }
+                ],
+                "lifecycle": {
+                  "preStop": {
+                    "exec": {
+                      "command": [
+                        "python",
+                        "-c",
+                        "import time; time.sleep(10)"
+                      ]
+                    }
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/ready",
+                    "port": 3003
+                  },
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 2
+                },
+                "livenessProbe": {
+                  "tcpSocket": {
+                    "port": 3003
+                  },
+                  "periodSeconds": 10
+                },
+                "startupProbe": {
+                  "httpGet": {
+                    "path": "/ready",
+                    "port": 3003
+                  },
+                  "periodSeconds": 2,
+                  "failureThreshold": 30
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "medium": "Memory",
+                  "sizeLimit": "16Mi"
+                }
+              }
+            ],
+            "nodeSelector": {
+              "kubernetes.io/hostname": "group17"
+            }
           }
         }
       }
@@ -539,13 +729,34 @@
     },
     {
       "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "api-reserve-backend",
+        "namespace": "temperature"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "selector": {
+          "app": "api-reserve"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 3003,
+            "targetPort": 3003
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "v1",
       "kind": "ConfigMap",
       "metadata": {
         "name": "gateway-config",
         "namespace": "temperature"
       },
       "data": {
-        "nginx.conf": "worker_processes 1;\npid /tmp/nginx.pid;\nerror_log /dev/stderr warn;\nevents { worker_connections 2048; }\nhttp {\n  access_log off;\n  client_body_temp_path /tmp/client_body;\n  proxy_temp_path /tmp/proxy;\n  fastcgi_temp_path /tmp/fastcgi;\n  uwsgi_temp_path /tmp/uwsgi;\n  scgi_temp_path /tmp/scgi;\n  resolver 10.43.0.10 valid=2s ipv6=off;\n  upstream temperature_api {\n    zone temperature_api 64k;\n    server api-backend.temperature.svc.cluster.local:3003 resolve max_fails=0;\n    keepalive 32;\n  }\n  server {\n    listen 8080;\n    location / {\n      proxy_pass http://temperature_api;\n      proxy_http_version 1.1;\n      proxy_set_header Connection \"\";\n      proxy_set_header Host $host;\n      proxy_connect_timeout 1s;\n      proxy_read_timeout 5s;\n      proxy_next_upstream error timeout http_502 http_503 http_504;\n      proxy_next_upstream_tries 3;\n      proxy_next_upstream_timeout 3s;\n      proxy_buffering on;\n    }\n  }\n}\n"
+        "nginx.conf": "worker_processes 1;\npid /tmp/nginx.pid;\nerror_log /dev/stderr warn;\nevents { worker_connections 2048; }\nhttp {\n  access_log off;\n  client_body_temp_path /tmp/client_body;\n  proxy_temp_path /tmp/proxy;\n  fastcgi_temp_path /tmp/fastcgi;\n  uwsgi_temp_path /tmp/uwsgi;\n  scgi_temp_path /tmp/scgi;\n  resolver 10.43.0.10 valid=2s ipv6=off;\n  upstream temperature_api {\n    zone temperature_api 64k;\n    server api-backend.temperature.svc.cluster.local:3003 resolve max_fails=1 fail_timeout=2s;\n    server api-reserve-backend.temperature.svc.cluster.local:3003 resolve backup max_fails=0;\n    keepalive 32;\n  }\n  server {\n    listen 8080;\n    location / {\n      proxy_pass http://temperature_api;\n      proxy_http_version 1.1;\n      proxy_set_header Connection \"\";\n      proxy_set_header Host $host;\n      proxy_connect_timeout 1s;\n      proxy_read_timeout 5s;\n      proxy_next_upstream error timeout http_502 http_503 http_504;\n      proxy_next_upstream_tries 5;\n      proxy_next_upstream_timeout 5s;\n      proxy_buffering on;\n    }\n  }\n}\n"
       }
     },
     {
@@ -566,12 +777,18 @@
           "metadata": {
             "labels": {
               "app": "gateway"
+            },
+            "annotations": {
+              "configuration-hash": "5c18b64b4b3fbe4a00ca10e9466250ee7f3ef8b9f52898ed6ff9c7c12335df3f"
             }
           },
           "spec": {
             "automountServiceAccountToken": false,
             "securityContext": {
               "fsGroup": 10001
+            },
+            "nodeSelector": {
+              "kubernetes.io/hostname": "group17"
             },
             "containers": [
               {
@@ -662,8 +879,8 @@
           "kind": "Deployment",
           "name": "api"
         },
-        "minReplicas": 2,
-        "maxReplicas": 4,
+        "minReplicas": 1,
+        "maxReplicas": 3,
         "metrics": [
           {
             "type": "Resource",
@@ -697,7 +914,7 @@
         "minAvailable": 1,
         "selector": {
           "matchLabels": {
-            "app": "api"
+            "component": "temperature-api"
           }
         }
       }

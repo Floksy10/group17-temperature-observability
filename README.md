@@ -4,6 +4,7 @@ Avro Kafka events → durable sensor aggregation → historical temperature REST
 
 **Current group deployment:** K3s/Kubernetes, API `http://63.33.242.251:3003`, Prometheus `http://63.33.242.251:3008`. PostgreSQL remains on its existing Docker volume. Course consumers read `experiment` and notify the real service using the group's token. Development tests read `group17`, use an isolated database and a local mock.
 
+- [Current API placement and Grafana latency analysis](docs/grafana-latency-followup.md)
 - [Measured performance, selected settings and limitations](docs/final-performance.md)
 - [Terminal commands, operation and English team handoff](docs/final-kubernetes-runbook.md)
 - [Russian explanation](docs/final-explanation-ru.md)

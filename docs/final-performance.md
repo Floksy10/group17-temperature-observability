@@ -1,3 +1,5 @@
+> **API placement updated on 23 October:** primary on Nick and reserve on the group VM, with measured burst-latency improvement. See [the current follow-up](grafana-latency-followup.md). Measurements below describe the previous release.
+
 # Final performance upgrade — measured results
 
 The current group VM runs the API, Kafka processing, notification delivery and monitoring in K3s. PostgreSQL stays on its existing Docker volume. The course-facing API remains on **63.33.242.251:3003** and Prometheus on **:3008**. The course topic remains `experiment`; its existing consumer group was retained during cutover.

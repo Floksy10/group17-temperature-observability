@@ -8,10 +8,10 @@ This supersedes the earlier Compose/personal-consumer setup for the current grou
 ssh -o IdentitiesOnly=yes \
   -i "$HOME/Documents/Cloud and edge coputing/group17/group17_rsa" \
   ubuntu@63.33.242.251
-cd ~/group17-final-work
+cd ~/group17-latency-work
 ```
 
-This working tree is on `codex/final-performance`. The older `~/group17-temperature-observability` checkout was retained. The running Pods use built images, not a bind mount of either directory.
+This working tree is on `codex/grafana-latency-followup`. The older `~/group17-temperature-observability` checkout was retained. The running Pods use built images, not a bind mount of either directory.
 
 ## 2. Terminal A — deployment and resources
 
@@ -22,7 +22,7 @@ sudo k3s kubectl -n temperature top pods
 sudo k3s kubectl top nodes
 ```
 
-Expected minimum: two Ready nodes; two ready API Pods, two consumers, two notifiers, one gateway, one Prometheus and one node-exporter. More API Pods may be created by HPA. Nick's load node is tainted intentionally. It does not automatically run application Pods.
+Expected minimum: two Ready nodes; one ready primary API on Nick, one ready `api-reserve` on the group VM, two consumers, two notifiers, one gateway, one Prometheus and one node-exporter. HPA can grow the primary from one to three Pods, for two to four API Pods total. Nick retains its load taint; the primary API explicitly tolerates it.
 
 For a live view:
 
@@ -118,9 +118,21 @@ sudo k3s kubectl -n temperature rollout status deployment/notifier
 python3 scripts/verify_runtime.py
 ```
 
-Use a **new image tag** and update `render.py` for a future code change. `IfNotPresent` with an unchanged tag does not roll Pods or distribute a rebuilt image. A gateway ConfigMap change also needs `rollout restart deployment/gateway` after applying; its `subPath` mount is not updated live.
+Use a **new image tag** and update `render.py` for a future code change. `IfNotPresent` with an unchanged tag does not roll Pods or distribute a rebuilt image. The generated gateway template includes a configuration checksum, so applying a regenerated ConfigMap rolls the gateway. A manual ConfigMap edit without regenerating the checksum still needs a gateway restart because its `subPath` mount is not updated live.
 
-`prepare_shadow.py`, `activate_api.py`, `activate_monitoring.py` and `activate_workers.py` record the one-time migration, not everyday startup commands. The worker handover script requires Kubernetes workers at zero and the original Docker container names. Do not rerun it on this active deployment.
+The API image must exist on **both** Docker runtimes before a release. Other images currently run only on the group VM. For the current API image, this transfer is run from a **Mac terminal**, not from inside an SSH session:
+
+```bash
+cd "$HOME/Documents/Cloud and edge coputing"
+ssh -o IdentitiesOnly=yes -i group17/group17_rsa ubuntu@63.33.242.251 \
+  'docker save group17/temperature-api:final-v2 | gzip -1' | \
+ssh -o IdentitiesOnly=yes -i client4/client4_rsa ubuntu@54.195.153.114 \
+  'gunzip | docker load'
+```
+
+For a future release, substitute its new image tag on both sides, load it on both nodes, then apply the corresponding manifest. The measured API placement is documented in [the Grafana follow-up](grafana-latency-followup.md).
+
+`prepare_shadow.py`, `activate_api.py`, `activate_monitoring.py`, `activate_workers.py` and `deploy_api_placement.py` record one-time migrations, not everyday startup commands. The worker handover script requires Kubernetes workers at zero and the original Docker container names. Do not rerun it on this active deployment.
 
 K3s/systemd and Docker restart policies maintain services after reboot. Routine SSH logout does not stop them.
 
@@ -147,10 +159,10 @@ Get the new code using the GitHub SSH key already configured on your VM:
 
 ```bash
 git fetch origin
-git switch --track origin/codex/final-performance
+git switch --track origin/codex/grafana-latency-followup
 ```
 
-If the branch already exists locally, `git switch codex/final-performance`, then `git pull --ff-only`. Preserve any local edits before switching. Your existing Git deploy key is for repository access; it is not the Kubernetes node-join token or VM login key.
+If the branch already exists locally, `git switch codex/grafana-latency-followup`, then `git pull --ff-only`. Preserve any local edits before switching. Your existing Git deploy key is for repository access; it is not the Kubernetes node-join token or VM login key.
 
 You can immediately participate as an HTTP test client without a DB password or Kafka credentials:
 
@@ -182,8 +194,8 @@ sudo env INSTALL_K3S_VERSION='v1.36.5+k3s1' \
   --node-taint role=load:NoSchedule
 ```
 
-4. On the group VM, `sudo k3s kubectl get nodes -o wide` must show the new distinct names as Ready. They start tainted for load generation, just like Nick. Adding a node does not multiply PostgreSQL throughput.
-5. Before scheduling applications there, build/import **the exact release images** onto that Docker node, verify pod-to-database connectivity and resource capacity, then remove the load taint deliberately and repeat the combined correctness/latency profile. Do not remove the taint first: these local image tags are not hosted in a public registry.
+4. On the group VM, `sudo k3s kubectl get nodes -o wide` must show the new distinct names as Ready. They start tainted for load generation. Nick also retains that taint but has an explicit API toleration. Adding a node does not multiply PostgreSQL throughput.
+5. Before scheduling applications there, build/import **the exact release images** onto that Docker node, verify pod-to-database connectivity and resource capacity, then remove the load taint deliberately and repeat the combined correctness/latency profile. Do not remove the taint first: these local image tags are not hosted in a public registry. This release explicitly pins the primary API to Nick and its reserve to the group node; scheduling on additional nodes also requires a deliberate placement change and a new benchmark.
 6. Keep the same production `KAFKA_GROUP_ID` for shared consumers. Different group IDs each receive the stream and do not provide cooperative work sharing. Do not increase consumer count merely to use all machines; the measured two-consumer configuration performed better.
 
 For this course-sized workload, using personal VMs as independent load generators is already useful. A four-node application deployment and its performance have not been claimed or measured.

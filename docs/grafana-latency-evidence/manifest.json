@@ -1,0 +1,200 @@
+{
+  "created_utc": "2026-10-23T01:06:40.265404+00:00",
+  "cases": [
+    {
+      "file": "final250.summary.json",
+      "requests": 5000,
+      "valid": 5000,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 250
+    },
+    {
+      "file": "final80-1.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "final80-2.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "nick-single-1.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "nick-single-2.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "placement-base1.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "placement-base2.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "placement-candidate1.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "placement-candidate2.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "public-burst-80.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "public-steady-80.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "steady",
+      "rate": 80
+    },
+    {
+      "file": "reserve-80.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "reserve-failover.summary.json",
+      "requests": 7500,
+      "valid": 7500,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 250
+    },
+    {
+      "file": "serial-gateway.summary.json",
+      "requests": 300,
+      "valid": 300,
+      "errors": 0,
+      "pattern": "serial",
+      "rate": 94
+    },
+    {
+      "file": "serial-pod.summary.json",
+      "requests": 300,
+      "valid": 300,
+      "errors": 0,
+      "pattern": "serial",
+      "rate": 94
+    },
+    {
+      "file": "serial-private.summary.json",
+      "requests": 300,
+      "valid": 300,
+      "errors": 0,
+      "pattern": "serial",
+      "rate": 94
+    },
+    {
+      "file": "serial-public.summary.json",
+      "requests": 300,
+      "valid": 300,
+      "errors": 0,
+      "pattern": "serial",
+      "rate": 94
+    },
+    {
+      "file": "weighted-1.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    },
+    {
+      "file": "weighted-2.summary.json",
+      "requests": 1200,
+      "valid": 1200,
+      "errors": 0,
+      "pattern": "burst",
+      "rate": 80
+    }
+  ],
+  "sha256": {
+    "runtime-after.json": "e486eb79d6ac8ef6b6cb2819a60d1a424269876c7de0637f9f3b6e665c6499fc",
+    "course-after.json": "4b95875ae6ea6efd0fe1ddbc291db2d212fffd77016598789c48af9409d68796",
+    "course-before.json": "b2b776fdcd191ace3a66838d6b818e57d2aa23b137a0d8df2acbf6f6622ef1c2",
+    "http/serial-private.summary.json": "c5da99daf05ac9a003a3c0bd545fcac0b04e961c8e2066e24f79f009bc5bbfc7",
+    "http/placement-base1.jsonl.gz": "14b820c6a9ab2a6f0ae74721315e54fdf9a1edb0cae048b98c581b3a4baaaf7d",
+    "http/reserve-failover.summary.json": "967c4cc9845254272b0ebcc0bcf2c836cb602fc3008bbd3f17c37e5bf2afc5a9",
+    "http/placement-base1.summary.json": "a1c0648390a4b2b498e14ee5eeed3ebc3385337c397d2b0ae04221c513c55a5a",
+    "http/weighted-2.jsonl.gz": "24cee677e4b10d4fb19211b371d374bd1bbd18d49aff546147f8e0b7e57cdb16",
+    "http/nick-single-2.jsonl.gz": "6f0b1de9edb4c3d0daeb0187c8741a1eea8aec167f9229b27182b7fe024f8c34",
+    "http/final80-2.summary.json": "6ebc7ea42cfe050f66124cce2b1e0e27c722afb595ec55f4523f5ec5bbab3a1c",
+    "http/reserve-failover.jsonl.gz": "b05c09df5a012442d428eecec5def6abe400c54a3149fae804e6b5ae08ea00ac",
+    "http/placement-candidate2.jsonl.gz": "2897604e64bb791181b6e958f3d8c74e9eaafbcad1c4a74d984ed77189df1e33",
+    "http/reserve-80.jsonl.gz": "cac81173f93ac7a9aaabae0d40775f564a1d6418620ad7d1cab1e78c0dc06961",
+    "http/serial-public.jsonl.gz": "a106dd0cc67d83489d8b68a0396f4b23d99b0dfd59d53a9ccbc6657112c04cdc",
+    "http/serial-gateway.summary.json": "284036015e05b9cd5b4ec98a1d44327001a523eb9f019f142b77b8131530c35d",
+    "http/nick-single-1.summary.json": "6cc48ea6f7ca0c169406bcc5c3d0da499ea84e3078853cc0132463198c50a8f9",
+    "http/placement-candidate1.summary.json": "d3418a0b6353f39a045e3415187f0738a58c02b392818e35026af8dcb9baf176",
+    "http/final80-1.jsonl.gz": "77e568ec2a7878c0bb72f3557bea2dcab698494994428aeff00b56bc62a3673f",
+    "http/weighted-1.summary.json": "1c1d0e0dd7530e1dab8bc60009ec5d95f85ed2906f75b06b7b1f98c773284839",
+    "http/placement-candidate1.jsonl.gz": "3e29e5608a379a8328a001e66f76b3b216d96ea303b8101cf72e84aabaa71993",
+    "http/reserve-80.summary.json": "6f52c1d4405689997cf1d968e8a350d7e526c66e1a9b39f0978c2d883952ae05",
+    "http/nick-single-1.jsonl.gz": "ac9d731a6ed21b7098e19c074f35a48a778a7f67ac5d212be3e62e1ee2da0320",
+    "http/nick-single-2.summary.json": "41216c6040797e5c09d2dea04a8b2ac603e52cfc0453da7285833a39ebe883f8",
+    "http/serial-pod.jsonl.gz": "62a1a6c63e6692e572f71074eda44bda8064048023f85e6be3de6119ea944aaa",
+    "http/placement-candidate2.summary.json": "255133a257eb86114e571862e4e9d282ce4ed2cb61faff067b6045a43c9d7e32",
+    "http/weighted-1.jsonl.gz": "fc493a92949cf5d1e238b72edc29721a4cd340920ba719b7429c9c886626d745",
+    "http/final250.jsonl.gz": "a1426cfdf802e049d4cb06e565ffeb897e963788a3335ef1174b52a83d8556c0",
+    "http/serial-private.jsonl.gz": "d75de7cc1b06cb72a0254bf04837870ea65abc4cf3bfacc6b5a2e1ec6634ebec",
+    "http/serial-gateway.jsonl.gz": "e5739aa12a56e0648d27297d3d77ca0dfcab233f6d74d9a1f88ba75dc453e386",
+    "http/public-burst-80.jsonl.gz": "03a9a0f6cab5bb7adb6f36726d4c262a69ec020c18c9246f40458f8ded1bae36",
+    "http/weighted-2.summary.json": "84bf26806b1261f3833830bb8d35dd39137111e67b8c91643fd90107893db3f2",
+    "http/serial-pod.summary.json": "3006ef090f7730b0bda80c3aaee75d635d393c8fee5ffe454879bd63a79fbe69",
+    "http/placement-base2.jsonl.gz": "ecd9cc7c72817c85aa36bdad79f0de9cbf03db4caa1fceff936f431f4725ed26",
+    "http/final80-2.jsonl.gz": "0005edf2dfdb6e586b66c762daa905460cbe69c31a2392c956afe8022db15d5a",
+    "http/serial-public.summary.json": "bf641e2811269c286443c49c9cd46aa18989f9ffb1c87c8d401aaa5af9bd884e",
+    "http/public-burst-80.summary.json": "2cbab244958543d006986b252643d20aae00762f38693924cb2f9d265a3abcb9",
+    "http/placement-base2.summary.json": "b942bfeeb3140a6d5018be513f4a0d9d0143651eae5f93ffd6a70310539f803c",
+    "http/public-steady-80.summary.json": "c9901b937ce30d7ee88f9881545aeda65b4c5bcf489fd5b86415b40e47eee39a",
+    "http/public-steady-80.jsonl.gz": "52c3e40698f10a5db3483ae881a750a7d7becec4fae694dcf4c906c7843e727a",
+    "http/final80-1.summary.json": "9c169160da43bddb3c26ce59686f0491fc894a619ff577e1d13efd5f10ebe653",
+    "http/final250.summary.json": "75fcd8339ee594a499f948bdcae8905ff2560d6db669a4fc1e45c397c683f62b"
+  }
+}

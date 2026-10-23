@@ -1,6 +1,7 @@
 """Render Kubernetes objects. No credentials are included in this file."""
 import json
 import argparse
+import hashlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--active", action="store_true")
@@ -36,7 +37,7 @@ def deployment(name, image, replicas, port=None, args=None):
     if port:
         container['ports'] = [dict(name='http', containerPort=port)]
     if name == 'api':
-        container['resources']['requests']['cpu'] = '250m'
+        container['resources']['requests']['cpu'] = '400m'
         container['env'] += [dict(name=k, value=v) for k, v in {
             'API_DB_POOL_SIZE': '4', 'API_CACHE_BYTES': '33554432',
             'API_CACHE_MAX_POINTS': '4096', 'API_CACHE_EXPERIMENTS': '1024',
@@ -74,14 +75,29 @@ add('EndpointSlice', 'database', addressType='IPv4',
     ports=[dict(name=None, protocol='TCP', port=15432)],
     endpoints=[dict(addresses=['10.42.0.1'], conditions=dict(ready=True))])
 objects[-1]['metadata']['labels'] = {'kubernetes.io/service-name': 'database', 'endpointslice.kubernetes.io/managed-by': 'group17'}
-deployment('api', 'group17/temperature-api:final-v2', 2, 3003,
+deployment('api', 'group17/temperature-api:final-v2', 1, 3003,
     ['uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '3003', '--workers', '1', '--loop', 'uvloop', '--http', 'httptools', '--no-access-log'])
+# API roles are separate: primary on Nick, reserve near the group database.
+api = objects[-1]
+api['spec']['template']['metadata']['labels']['component'] = 'temperature-api'
+api['spec']['template']['spec']['nodeSelector'] = {'kubernetes.io/hostname': 'nick-client4' if args.active else 'group17'}
+api['spec']['template']['spec']['tolerations'] = [dict(key='role', operator='Equal', value='load', effect='NoSchedule')]
+reserve = json.loads(json.dumps(api))
+reserve['metadata']['name'] = 'api-reserve'
+reserve['spec']['replicas'] = 1 if args.active else 0
+reserve['spec']['selector']['matchLabels'] = dict(app='api-reserve')
+reserve['spec']['template']['metadata']['labels']['app'] = 'api-reserve'
+reserve['spec']['template']['spec']['nodeSelector'] = {'kubernetes.io/hostname': 'group17'}
+reserve['spec']['template']['spec'].pop('tolerations', None)
+objects.append(reserve)
 # Shadow installation starts no Kafka readers/notifiers. Activation is explicit.
 deployment('consumer', 'group17/temperature-consumer:final-v4', args.consumer_replicas if args.active else 0, 8001)
 deployment('notifier', 'group17/temperature-notifier:final-v3', 2 if args.active else 0)
 add('Service', 'api', dict(type='NodePort', selector=dict(app='gateway'),
     ports=[dict(name='http', port=3003, targetPort=8080, nodePort=3003 if args.active else 13005)]))
 add('Service', 'api-backend', dict(clusterIP='None', selector=dict(app='api'),
+    ports=[dict(name='http', port=3003, targetPort=3003)]))
+add('Service', 'api-reserve-backend', dict(clusterIP='None', selector=dict(app='api-reserve'),
     ports=[dict(name='http', port=3003, targetPort=3003)]))
 add('ConfigMap', 'gateway-config', data={'nginx.conf': """worker_processes 1;
 pid /tmp/nginx.pid;
@@ -97,7 +113,8 @@ http {
   resolver 10.43.0.10 valid=2s ipv6=off;
   upstream temperature_api {
     zone temperature_api 64k;
-    server api-backend.temperature.svc.cluster.local:3003 resolve max_fails=0;
+    server api-backend.temperature.svc.cluster.local:3003 resolve max_fails=1 fail_timeout=2s;
+    server api-reserve-backend.temperature.svc.cluster.local:3003 resolve backup max_fails=0;
     keepalive 32;
   }
   server {
@@ -110,16 +127,17 @@ http {
       proxy_connect_timeout 1s;
       proxy_read_timeout 5s;
       proxy_next_upstream error timeout http_502 http_503 http_504;
-      proxy_next_upstream_tries 3;
-      proxy_next_upstream_timeout 3s;
+      proxy_next_upstream_tries 5;
+      proxy_next_upstream_timeout 5s;
       proxy_buffering on;
     }
   }
 }
 """})
+gateway_checksum = hashlib.sha256(objects[-1]['data']['nginx.conf'].encode()).hexdigest()
 add('Deployment', 'gateway', dict(replicas=1, selector=dict(matchLabels=dict(app='gateway')),
-    template=dict(metadata=dict(labels=dict(app='gateway')), spec=dict(automountServiceAccountToken=False,
-        securityContext=dict(fsGroup=10001), containers=[dict(name='gateway', image='nginx:1.28-alpine', command=['sh','-c',"ulimit -n 8192; exec nginx -g 'daemon off;'"],
+    template=dict(metadata=dict(labels=dict(app='gateway'), annotations={'configuration-hash':gateway_checksum}), spec=dict(automountServiceAccountToken=False,
+        securityContext=dict(fsGroup=10001), nodeSelector={'kubernetes.io/hostname':'group17'}, containers=[dict(name='gateway', image='nginx:1.28-alpine', command=['sh','-c',"ulimit -n 8192; exec nginx -g 'daemon off;'"],
             ports=[dict(containerPort=8080)], securityContext=dict(runAsUser=10001, runAsNonRoot=True,
             readOnlyRootFilesystem=True, allowPrivilegeEscalation=False, capabilities=dict(drop=['ALL'])),
             resources=dict(requests=dict(cpu='100m',memory='16Mi'),limits=dict(cpu='500m',memory='64Mi')),
@@ -127,9 +145,9 @@ add('Deployment', 'gateway', dict(replicas=1, selector=dict(matchLabels=dict(app
             volumeMounts=[dict(name='config',mountPath='/etc/nginx/nginx.conf',subPath='nginx.conf',readOnly=True),dict(name='tmp',mountPath='/tmp')])],
         volumes=[dict(name='config',configMap=dict(name='gateway-config')),dict(name='tmp',emptyDir=dict(medium='Memory',sizeLimit='16Mi'))]))))
 add('HorizontalPodAutoscaler', 'api', dict(scaleTargetRef=dict(apiVersion='apps/v1', kind='Deployment', name='api'),
-    minReplicas=2, maxReplicas=4, metrics=[dict(type='Resource', resource=dict(name='cpu', target=dict(type='Utilization', averageUtilization=75)))],
+    minReplicas=1, maxReplicas=3, metrics=[dict(type='Resource', resource=dict(name='cpu', target=dict(type='Utilization', averageUtilization=75)))],
     behavior=dict(scaleDown=dict(stabilizationWindowSeconds=180), scaleUp=dict(stabilizationWindowSeconds=30))))
-add('PodDisruptionBudget', 'api', dict(minAvailable=1, selector=dict(matchLabels=dict(app='api'))))
+add('PodDisruptionBudget', 'api', dict(minAvailable=1, selector=dict(matchLabels=dict(component='temperature-api'))))
 add('NetworkPolicy', 'application-ingress', dict(podSelector=dict(matchLabels={}), policyTypes=['Ingress'],
     ingress=[{'from': [dict(podSelector={})]}, dict(ports=[dict(protocol='TCP', port=p) for p in [3003, 8080, 9090]])]))
 add('ServiceAccount', 'prometheus')
