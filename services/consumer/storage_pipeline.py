@@ -16,9 +16,20 @@ class MeasurementResult:
     notification_type: str | None
 
 
+@dataclass(frozen=True)
+class SkippedEvent:
+    """A record that can never be processed, so it is acknowledged and dropped.
+
+    Raising instead would roll back the batch and retry it forever, blocking
+    every other experiment on the same partitions.
+    """
+    experiment_id: str
+    reason: str
+
+
 def process_event(
     connection: Connection, name: str, record: dict
-) -> MeasurementResult | None:
+) -> MeasurementResult | SkippedEvent | None:
     """Process one Kafka record in the caller's database transaction."""
     experiment_id = record["experiment"]
     with connection.cursor(row_factory=dict_row) as cursor:
@@ -26,7 +37,7 @@ def process_event(
             temperature_range = record["temperature_range"]
             sensors = list(record["sensors"])
             if not sensors or len(sensors) != len(set(sensors)):
-                raise ValueError("An experiment needs distinct sensors")
+                return SkippedEvent(experiment_id, "invalid_configuration")
             cursor.execute(
                 """
                 INSERT INTO experiments (
@@ -60,7 +71,8 @@ def process_event(
             )
         experiment = cursor.fetchone()
         if experiment is None:
-            raise ValueError(f"Unknown experiment {experiment_id}")
+            # Usually a consumer that joined after the configuration event.
+            return SkippedEvent(experiment_id, "unknown_experiment")
 
         if name == "stabilization_started":
             cursor.execute(
@@ -87,12 +99,13 @@ def process_event(
             return None
 
         if name != "sensor_temperature_measured":
-            raise ValueError(f"Unknown Kafka event type {name}")
+            return SkippedEvent(experiment_id, "unknown_event_type")
 
-        sensor_id = record["sensor"]
-        readings = record.get("_sensor_readings", [(sensor_id, record["temperature"])])
-        if any(sensor not in experiment["sensors"] for sensor, _ in readings):
-            raise ValueError(f"Unexpected sensor {sensor_id} in {experiment_id}")
+        readings = record.get("_sensor_readings", [(record["sensor"], record["temperature"])])
+        readings = [(sensor, value) for sensor, value in readings
+                    if sensor in experiment["sensors"]]
+        if not readings:
+            return SkippedEvent(experiment_id, "unexpected_sensor")
 
         measurement_id = record["measurement_id"]
         if experiment["measurement_complete"]:

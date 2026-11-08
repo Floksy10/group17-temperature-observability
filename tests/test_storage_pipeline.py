@@ -10,7 +10,9 @@ import os
 import sys
 import unittest
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT / 'services' / 'consumer'))
@@ -18,7 +20,8 @@ sys.path.insert(0, str(ROOT / 'services' / 'consumer'))
 DATABASE_URL = os.getenv('TEST_DATABASE_URL')
 if DATABASE_URL:
     import psycopg
-    from storage_pipeline import process_event
+    from batching import process_batch
+    from storage_pipeline import SkippedEvent, process_event
 
 SENSORS = ['s1', 's2']
 
@@ -142,13 +145,42 @@ class StoragePipelineTest(unittest.TestCase):
         self.measure('m2', [30.0, 30.0], 3.0)
         self.assertEqual([row[0] for row in self.history()], ['m1'])
 
-    def test_unknown_experiment_and_sensor_are_rejected(self):
-        with self.assertRaises(ValueError):
-            self.measure('m1', [25.5, 25.5])
+    def test_unusable_events_are_skipped_not_raised(self):
+        self.assertEqual(self.measure('m1', [25.5, 25.5]),
+                         SkippedEvent('e1', 'unknown_experiment'))
+        self.assertEqual(self.event('experiment_started', timestamp=0.0),
+                         SkippedEvent('e1', 'unknown_experiment'))
+        self.assertEqual(self.event('experiment_configured', experiment='bad', researcher='r',
+                                    sensors=['a', 'a'],
+                                    temperature_range=dict(lower_threshold=0.0, upper_threshold=1.0)),
+                         SkippedEvent('bad', 'invalid_configuration'))
         self.configure()
-        with self.assertRaises(ValueError):
-            self.event('sensor_temperature_measured', sensor='unknown', measurement_id='m1',
-                       temperature=25.0, timestamp=1.0, measurement_hash='h')
+        self.assertEqual(self.event('sensor_temperature_measured', sensor='unknown', measurement_id='m1',
+                                    temperature=25.0, timestamp=1.0, measurement_hash='h'),
+                         SkippedEvent('e1', 'unexpected_sensor'))
+        self.assertEqual(self.connection.execute('SELECT count(*) FROM pending_readings').fetchone()[0], 0)
+
+    def test_skipped_event_does_not_roll_back_its_batch(self):
+        # Before this, one unknown-experiment reading failed the whole batch on
+        # every retry and stopped the consumer for all experiments it owned.
+        @contextmanager
+        def connection():
+            with self.connection.transaction():
+                yield self.connection
+
+        messages = [
+            [('sensor_temperature_measured', dict(experiment='missed', sensor='s1', measurement_id='m1',
+                                                  temperature=25.0, timestamp=1.0, measurement_hash='h'))],
+            [('experiment_configured', dict(experiment='e1', researcher='r@example.com', sensors=SENSORS,
+                                            temperature_range=dict(lower_threshold=25.0, upper_threshold=26.0)))],
+            [('experiment_started', dict(experiment='e1', timestamp=0.0))],
+        ] + [[('sensor_temperature_measured', dict(experiment='e1', sensor=sensor, measurement_id='m1',
+                                                   temperature=25.5, timestamp=1.0, measurement_hash='h'))]
+             for sensor in SENSORS]
+        results = process_batch(messages, SimpleNamespace(connection=connection),
+                                decode=lambda message: message, process=process_event, compact=True)
+        self.assertIsInstance(results[0][2], SkippedEvent)
+        self.assertEqual([row[0] for row in self.history()], ['m1'])
 
 
 if __name__ == '__main__':

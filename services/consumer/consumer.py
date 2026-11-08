@@ -16,7 +16,7 @@ from confluent_kafka import Consumer, KafkaError, KafkaException, Message
 from prometheus_client import Counter, Histogram, start_http_server
 from psycopg_pool import ConnectionPool
 
-from storage_pipeline import process_event
+from storage_pipeline import MeasurementResult, SkippedEvent, process_event
 from batching import process_batch, commit_offsets
 
 
@@ -40,6 +40,8 @@ COMMIT = Histogram("group17_kafka_commit_seconds", "Kafka offset commit duration
 BATCHES = Histogram("group17_batch_messages", "Messages per database transaction", buckets=(1, 4, 8, 16, 32, 64, 128, 256))
 LAG = Histogram("group17_ingestion_lag_seconds", "Measurement timestamp to durable processing", buckets=(.05, .1, .25, .5, 1, 2, 5, 10, 30))
 ERRORS = Counter("group17_processing_errors_total", "Failed Kafka events")
+SKIPPED = Counter("group17_skipped_events_total", "Unusable Kafka events acknowledged without processing", ["reason"])
+_reported_skips: set[tuple[str, str]] = set()
 
 
 def on_commit(error, partitions):
@@ -106,15 +108,31 @@ def decode_records(payload: bytes | None) -> list[dict[str, object]]:
 
 
 def decode_message(message):
-    name = record_name(message)
-    return [(name, record) for record in decode_records(message.value())]
+    # A message that cannot be decoded never will be; skip it rather than
+    # failing the batch and blocking its partition.
+    try:
+        name = record_name(message)
+        return [(name, record) for record in decode_records(message.value())]
+    except Exception:
+        SKIPPED.labels("undecodable").inc()
+        LOGGER.warning("message_skipped reason=undecodable partition=%s offset=%s",
+                       message.partition(), message.offset(), exc_info=True)
+        return []
 
 
 def record_results(results):
     # Log/metrics after the DB transaction commits, including on batch replay.
     for name, record, result in results:
         EVENTS.labels(name).inc(record.get("_record_count", 1))
-        if result is not None:
+        if isinstance(result, SkippedEvent):
+            SKIPPED.labels(result.reason).inc(record.get("_record_count", 1))
+            # Warn once per experiment and reason, not once per reading.
+            key = (result.reason, result.experiment_id)
+            if key not in _reported_skips:
+                _reported_skips.add(key)
+                LOGGER.warning("event_skipped reason=%s event=%s experiment=%s",
+                               result.reason, name, result.experiment_id)
+        elif isinstance(result, MeasurementResult):
             AGGREGATES.inc()
             LAG.observe(max(0.0, time.time() - float(record["timestamp"])))
             LOGGER.debug(
