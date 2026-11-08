@@ -186,10 +186,7 @@ def load_experiment_series(
     start_time: float | None = None, end_time: float | None = None,
     outside_only: bool = False,
 ) -> ExperimentSeries:
-    cached = request.app.state.series_cache.get(experiment_id)
-    if cached is not None:
-        return cached
-
+    """Read a series from the database; callers check the cache first."""
     with request.app.state.pool.connection() as connection:
         with connection.cursor(row_factory=dict_row) as cursor:
             cursor.execute(
@@ -223,7 +220,6 @@ def load_experiment_series(
                 cursor.execute(base + where + ordering, parameters)
                 rows = list(cursor.fetchall())
 
-
     points = tuple(
         {"timestamp": row["timestamp"], "temperature": row["temperature"]}
         for row in rows
@@ -243,8 +239,6 @@ def load_experiment_series(
 async def get_experiment_series(
     request: Request, experiment_id: str, start_time=None, end_time=None, outside_only=False
 ) -> ExperimentSeries:
-    # Capture the object once: subsequent eviction must not turn a hit into
-    # blocking database I/O on the event loop.
     cached = request.app.state.series_cache.get(experiment_id)
     CACHE_LOOKUPS.labels("hit" if cached is not None else "miss").inc()
     if cached is not None:

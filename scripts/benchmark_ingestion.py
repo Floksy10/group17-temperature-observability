@@ -16,7 +16,7 @@ from psycopg import sql
 from psycopg_pool import ConnectionPool
 
 sys.path.insert(0, str(Path(__file__).parents[1] / 'services' / 'consumer'))
-from storage import process_event
+from storage_pipeline import process_event
 from batching import process_batch
 
 

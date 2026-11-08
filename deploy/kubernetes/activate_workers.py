@@ -72,8 +72,7 @@ def main():
         else:
             raise RuntimeError('Existing notifications did not drain; abort handover')
         command('docker', 'stop', '--timeout', '15', *old_notifiers, stdout=subprocess.DEVNULL)
-        # The user explicitly approved retiring legacy TCP admin connections.
-        # Local Unix-socket psql administration remains unchanged.
+        # Reject TCP logins for the admin role; local Unix-socket psql still works.
         db = 'group17-temperature-observability-database-1'
         hba = '/var/lib/postgresql/data/pg_hba.conf'
         backup = '/var/lib/postgresql/data/pg_hba.pre-kubernetes.conf'
